@@ -1,0 +1,593 @@
+// ======================================
+// 🎨 VARIÁVEIS DE TEMA
+// ======================================
+$light-bg-start: #f8f9fa;
+$light-bg-end: #ececec;
+$card-bg: #ffffff;
+$primary-text-color: #1b375b;
+$secondary-text-color: #555;
+$accent-color-green: #45ac26;
+$border-color: #dee2e6;
+
+// ======================================
+// 💠 ESTRUTURA GERAL
+// ======================================
+.dashboard-modern {
+  color: $secondary-text-color;
+  padding: 1rem 2rem;
+  min-height: 100vh;
+}
+
+// ======================================
+// 🧭 CABEÇALHO
+// ======================================
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid $border-color;
+
+  .header-left {
+    h2 {
+      font-size: 1.8rem;
+      margin: 0;
+      color: $primary-text-color;
+    }
+
+    .customer-name {
+      font-size: 1rem;
+      margin: 0;
+      color: $secondary-text-color;
+    }
+  }
+}
+
+.response-stats {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+  margin-top: 1rem;
+  align-items: center;
+  
+  div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    color: $secondary-text-color;
+    gap:1rem;
+
+    strong {
+      font-size: 1.2rem;
+      color: $primary-text-color;
+    }
+
+    .icon-media {
+      color: #45ac26;
+      margin-bottom: 0.3rem;
+    }
+
+    .icon-min {
+      color: #0088FE;
+      margin-bottom: 0.3rem;
+    }
+
+    .icon-max {
+      color: #e74c3c;
+      margin-bottom: 0.3rem;
+    }
+  }
+}
+
+
+// ======================================
+// 📎 SELETOR DE SERVIÇO
+// ======================================
+.period-selector{
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.service-selector {
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: space-between;
+
+  label {
+    font-weight: 500;
+  }
+
+  select {
+    appearance: none;
+    padding: 0.6rem 2rem 0.6rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid $border-color;
+    background-color: $card-bg;
+    color: $secondary-text-color;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover,
+    &:focus {
+      border-color: $accent-color-green;
+      outline: none;
+    }
+
+    // seta moderna (Google UI style)
+    background-image: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 24 24' stroke='%23666' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-position: right 12px center;
+    background-size: 14px;
+    background-repeat: no-repeat;
+
+  }
+}
+
+
+// ======================================
+// 📊 CARDS DE ESTATÍSTICAS
+// ======================================
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background-color: $card-bg;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid $border-color;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  }
+
+  h4 {
+    margin-bottom: .5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: $secondary-text-color;
+  }
+
+  .stat-value {
+    font-size: 1.7rem;
+    font-weight: bold;
+    color: $accent-color-green;
+  }
+
+  .stat-description {
+    font-size: .9rem;
+  }
+}
+
+// ======================================
+// 📈 GRID DE GRÁFICOS
+// ======================================
+.main-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.chart-card {
+  background: $card-bg;
+  border: 1px solid $border-color;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+
+  &.large-card {
+    grid-column: span 2;
+  }
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  }
+
+  h3 {
+    margin-bottom: 1.2rem;
+    font-size: 1.2rem;
+    color: $primary-text-color;
+  }
+}
+
+// ======================================
+// 🟢 STATUS DOT (UP / DOWN / INSTÁVEL)
+// ======================================
+.status-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.status-text {
+  font-weight: bold;
+}
+
+.status-dot.up { background-color: #2ecc71; animation: pulse 1.5s infinite; }
+.status-text.up { color: #2ecc71; }
+
+.status-dot.instavel { background-color: #e2b000; animation: pulse 2.5s infinite ease-in-out; }
+.status-text.instavel { color: #e2b000; }
+
+.status-dot.down { background-color: #e74c3c; }
+.status-text.down { color: #e74c3c; }
+
+// 🔁 animação
+@keyframes pulse {
+  0% { transform: scale(1); opacity: .8; }
+  50% { transform: scale(1.6); opacity: .4; }
+  100% { transform: scale(1); opacity: .8; }
+}
+
+// ======================================
+// 🔄 LOADER
+// ======================================
+.loading-overlay {
+  position: fixed; inset: 0;
+  background: rgba(255,255,255,0.8);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 9999;
+}
+
+.loader {
+  width: 60px; height: 60px;
+  border: 8px solid #eee;
+  border-top: 8px solid #45ac26;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ======================================
+// 🧱 HEATMAPS
+// ======================================
+.calendar-heatmap {
+  display: grid;
+  grid-template-columns: repeat(30, 1fr);
+  gap: 3px;
+}
+.calendar-cell {
+  width: 100%;
+  padding-top: 100%;
+  border-radius: 3px;
+}
+
+.heatmap-container {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 5px;
+}
+.heatmap-days {
+  display: grid;
+  grid-template-rows: repeat(7, 1fr);
+}
+.heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  grid-template-rows: repeat(7, 1fr);
+  gap: 2px;
+}
+.heatmap-cell {
+  aspect-ratio: 1 / 1;
+  border-radius: 2px;
+}
+
+// .uptime-bars-container {
+//   display: grid;
+//   grid-template-columns: repeat(auto-fit, minmax(10px, 1fr));
+//   gap: 6px;
+//   padding-top: 8px;
+//   padding-bottom: 4px;
+//   justify-items: center; /* centraliza cada quadradinho */
+// }
+
+// /* Quadradinhos */
+// .uptime-bar {
+//   width: 14px;
+//   height: 14px;
+//   border-radius: 3px;
+//   transition: .15s ease-in-out;
+// }
+
+// .uptime-bar:hover {
+//   transform: scale(1.2);
+//   filter: brightness(1.15);
+// }
+.mini-uptime-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 0.8rem;
+}
+
+.uptime-bars-container {
+  display: flex;
+  gap: 4px;
+  overflow: hidden;
+  justify-content: space-between;
+}
+
+.uptime-bar {
+  width: 12px;
+  height: 28px;
+  border-radius: 4px;
+  transition: .2s;
+}
+
+.uptime-bar:hover {
+  transform: scale(1.15);
+  filter: brightness(1.2);
+}
+
+.uptime-details {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+/* mesmo grid do corpo para alinhar títulos e linhas */
+$incidents-grid: 140px 2fr 3fr 130px 110px;
+
+.incidents-card { width: 100%; }
+
+.incidents-header {
+  display: grid;
+  grid-template-columns: $incidents-grid;
+  gap: 8px;
+  padding: 8px;
+  font-size: .82rem;
+  font-weight: bold;
+  border-bottom: 3px solid rgba(0,0,0,.08);
+}
+
+
+.incidents-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.incident-row {
+  display: grid;
+  grid-template-columns: $incidents-grid;
+  align-items: center;
+  padding: 12px 8px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.4);
+  transition: .2s ease;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+
+}
+
+.incident-row:hover { background: rgba(255,255,255,0.55); }
+
+.incident-col {
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status { display: flex; align-items: center; gap: 6px; font-weight: 600; }
+
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.dot.up { background: #4caf50; box-shadow: 0 0 6px rgba(76,175,80,.7); }
+.dot.down { background: #e33044; box-shadow: 0 0 6px rgba(227,48,68,.7); }
+
+.status-text.up { color: #4caf50; }
+.status-text.down { color: #e33044; }
+
+.incident-delete {
+  justify-self: end;
+  background: rgba(227,48,68,.12);
+  border: none;
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: .2s;
+}
+.incident-delete:hover { background: rgba(227,48,68,.28); }
+
+.empty-incidents { padding: 12px; text-align: center; opacity: .7; font-size: .9rem; }
+
+/* responsivo: quebra o grid abaixo de 720px */
+@media (max-width: 720px) {
+  .incidents-header { display: none; }
+
+  .incident-row {
+    grid-template-columns: 20px 1fr 80px;
+    grid-template-areas:
+      "status service hour"
+      "status error  hour"
+      "status date   hour";
+    gap: 4px 8px;
+  }
+
+  .incident-col.status { grid-area: status; }
+  .incident-col.service { grid-area: service; }
+  .incident-col.error { grid-area: error; white-space: normal;}
+  .incident-col.date { grid-area: date; font-size: .75rem; opacity:.8; }
+  .incident-col.hour { grid-area: hour; text-align:right; font-size:.8rem; }
+
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: .8rem;
+
+  select {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid $border-color;
+    background: $card-bg;
+  }
+}
+
+.response-stats {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-around;
+  font-size: .9rem;
+
+  strong {
+    font-size: 1.2rem;
+    color: $accent-color-green;
+  }
+}
+
+.uptime-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.uptime-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* 👈 garante alinhamento vertical correto */
+  line-height: 1.2; /* 👈 deixa o texto mais alinhado */
+}
+
+.uptime-percent {
+  font-size: 16px; /* opcional - deixar igual ao título */
+  font-weight: 700;
+  color: $accent-color-green;
+  display: flex;
+  align-items: center; /* 👈 garante que o número fique na mesma linha */
+}
+
+.uptime-percent {
+  transform: translateY(6.5px);
+}
+
+.failure-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.failure-badge {
+  background: #e33044;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.failure-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.failure-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 0.95rem;
+}
+
+.failure-reason {
+  font-weight: 500;
+}
+
+.failure-count {
+  background: #e33044;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.failure-table {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+  padding-top: 6px;
+}
+
+.failure-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.failure-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.failure-pill {
+  background: #e33044;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  min-width: 32px;
+  text-align: center;
+}
+
+.failure-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  font-size: .82rem;
+  font-weight: bold;
+  border-bottom: 3px solid rgba(0,0,0,.08);
+
+}
+
+.chart-row {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+
+  .chart-card {
+    flex: 1;
+    min-width: 300px;
+  }
+}
+
+
+
+// ======================================
+// 📱 RESPONSIVIDADE
+// ======================================
+@media (max-width: 992px) {
+  .main-grid { grid-template-columns: 1fr; }
+  .chart-card.large-card { grid-column: span 1; }
+}
+
+@media (max-width: 768px) {
+  .dashboard-modern { padding: 1rem; }
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}

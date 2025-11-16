@@ -1,0 +1,163 @@
+$primary-color: #131a26;
+$secondary-color: #60b000;
+$tertiary-color: #FF7D2D;
+$light-color: #f8f9fa;
+$dark-color: #343a40;
+$light-bg-start: #f8f9fa;
+$light-bg-end: #ececec;
+$card-bg: #ffffff;
+$primary-text-color: #1b375b; 
+$secondary-text-color: #555;   
+$accent-color-green: #45ac26;
+$border-color: #dee2e6; 
+
+
+
+.gerenciar-servico {
+
+  // Cabeçalho da tabela
+  .header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 80px;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: $primary-text-color;
+  }
+
+  // Inputs e Selects
+  input,
+  select {
+    padding: 0.7rem;
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    width: 100%;
+    background: #fff;
+
+    &:focus {
+      border-color: $accent-color-green;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba($accent-color-green, 0.18);
+    }
+  }
+
+  // Botão de adicionar
+  .add-service-button {
+    background: $primary-text-color;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 42px;
+    height: 42px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s ease;
+
+    &:hover {
+      background: darken($primary-text-color, 12%);
+      transform: scale(1.08);
+    }
+  }
+
+  // Box de serviços pendentes
+  h3 {
+    margin-bottom: 10px;
+    color: $primary-text-color;
+    font-weight: 600;
+  }
+
+  .service-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95rem;
+    background: #fff;
+    border-radius: 6px;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  // Botões de ação (editar / trash)
+  .icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    transition: 0.15s ease;
+    color: #666;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    &:hover {
+      transform: scale(1.08);
+      color: $accent-color-green;
+    }
+
+    &.Excluir:hover {
+      color: #ff4b4b;
+    }
+  }
+
+  // Rodapé de botões
+  .save-button,
+  .back-button {
+    padding: 0.8rem 2rem;
+    border-radius: 6px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+
+  .save-button {
+    background: $accent-color-green;
+    color: #fff;
+
+    &:disabled {
+      background: lighten($accent-color-green, 30%);
+      cursor: not-allowed;
+    }
+
+    &:hover:not(:disabled) {
+      background: darken($accent-color-green, 10%);
+    }
+  }
+
+  .back-button {
+    background: #ddd;
+
+    &:hover {
+      background: darken(#ddd, 8%);
+    }
+  }
+
+}
+
+.btn-back {
+  background: #e6e6e6;
+  padding: .7rem 1.3rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  color: #444;
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-weight: 500;
+  margin-top: 2rem;
+
+  &:hover {
+    background: #ccc;
+  }
+}

@@ -1,0 +1,158 @@
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #fff;
+  position: relative;
+}
+
+/* SIDEBAR BASE */
+.sidebar {
+  width: 250px;
+  background: #fff;
+  color: rgb(0, 0, 0);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  margin-top: 25px;
+
+  border-right: 1px solid #dee2e6;
+  transition: width .2s ease;
+  overflow: hidden; /* evita texto vazar */
+}
+
+.sidebar {
+  /* o que já existe */
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+
+.sidebar {
+  margin-top: 0; /* substitui o antigo */
+  padding-top: 25px; /* pra manter seu espaço bonito */
+}
+
+
+/* MENU BOTÕES */
+.menu button {
+  background: none;
+  border: none;
+  color: rgb(0, 0, 0);
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1rem;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  transition: 0.2s ease;
+
+  svg {
+    transition: 0.2s ease;
+    font-size: 18px;
+  }
+
+  &:hover {
+    color: #60b000;
+    transform: translateX(2px);
+
+    svg {
+      color: #60b000;
+      transform: scale(1.1);
+    }
+  }
+
+  &.btn-sair:hover {
+    color: #ff4b4b;
+
+    svg {
+      color: #ff4b4b;
+      transform: scale(1.1);
+    }
+  }
+}
+
+/* ============================
+   🔒 COLAPSADO (sidebar recolhida)
+=============================== */
+
+.dashboard-layout.collapsed .sidebar {
+  width: 70px !important;
+}
+
+/* esconde label de texto */
+.dashboard-layout.collapsed .menu .label {
+  display: none !important;
+}
+
+/* centraliza ícones */
+.dashboard-layout.collapsed .menu button {
+  justify-content: center !important;
+  padding: 14px 0 !important;
+  gap: 0 !important;
+}
+
+/* texto fixo numa linha, nunca quebra */
+.menu .label {
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+  opacity: 1;
+  width: auto;
+  transition: opacity .15s ease, width .15s ease;
+}
+
+/* colapsado = some / sem quebra / sem flash */
+.dashboard-layout.collapsed .menu .label {
+  opacity: 0;
+  width: 0;
+}
+
+
+/* ============================
+   🎛 BOTÃO LATERAL
+=============================== */
+
+.side-toggle {
+  position: fixed;
+  left: 250px;
+  top: 120px;
+  width: 28px;
+  height: 55px;
+  background: #fff;
+  border: 1px solid #dcdcdc;
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: all .2s ease;
+}
+
+/* move quando colapsa */
+.dashboard-layout.collapsed .side-toggle {
+  left: 70px;
+}
+
+/* MOBILE MODE (vira botão pequeno) */
+.side-toggle.mobile {
+  top: 20px;
+  left: 10px;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+}
+
+/* CONTENT */
+.content {
+  flex: 1;
+  padding: 5px;
+}
+
