@@ -3,9 +3,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import logo from '../assets/images/logo.png';
-import monitorSvg from '../assets/images/monitor-animate.svg'; // 🔹 nova ilustração SVG animada
+import monitorSvg from '../assets/images/monitor-animate.svg';
 import './Cadastro.scss';
+
+const API_BASE = "http://52.14.133.217:5000/api/Autenticacao";
 
 const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -29,10 +30,7 @@ const PasswordInput = ({ label, value, onChange }) => {
         onChange={onChange}
         required
       />
-      <span
-        className="password-toggle-icon"
-        onClick={() => setVisible(!visible)}
-      >
+      <span className="password-toggle-icon" onClick={() => setVisible(!visible)}>
         <FontAwesomeIcon icon={visible ? faEyeSlash : faEye} />
       </span>
     </div>
@@ -60,28 +58,37 @@ const Cadastro = () => {
 
     setLoading(true);
     try {
-      const response = await fetch('https://52.14.133.217/auth/api/Autenticacao/registrar', {
+      const response = await fetch(`${API_BASE}/registrar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password })
+        body: JSON.stringify({
+          nome: name,
+          email,
+          senha: password,
+          confirmarSenha: confirmPassword
+        })
       });
 
       if (response.ok) {
-        const loginResponse = await fetch('https://52.14.133.217/auth/api/Autenticacao/autenticar', {
+        const loginResponse = await fetch(`${API_BASE}/autenticar`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
+          body: JSON.stringify({ email, senha: password })
         });
 
         if (loginResponse.ok) {
           const data = await loginResponse.json();
-          login({ email, token: data.token, name: data.name });
+          login({ email, token: data.token, name });
           navigate('/user-page');
         } else {
           setError({ field: 'global', message: 'Falha ao fazer login automático.' });
         }
       } else {
-        setError({ field: 'global', message: 'Falha ao registrar. Tente novamente.' });
+        const err = await response.json().catch(() => null);
+        setError({
+          field: 'global',
+          message: err?.mensagem ?? 'Falha ao registrar. Tente novamente.'
+        });
       }
     } catch {
       setError({ field: 'global', message: 'Erro de conexão. Tente novamente.' });
@@ -93,7 +100,6 @@ const Cadastro = () => {
   return (
     <div className="cadastro-page">
       <div className="cadastro-left">
-        {/* <img src={logo} alt="TrackOn" className="cadastro-logo" /> */}
         <h1>Monitore. Confie. Cresça.</h1>
         <p>Cadastre-se e veja seus serviços sempre online, com relatórios em tempo real e alertas inteligentes.</p>
         <img src={monitorSvg} alt="Ilustração de monitoramento" className="cadastro-illustration" />
@@ -123,32 +129,24 @@ const Cadastro = () => {
             {error.field === 'email' && <p className="error-message">{error.message}</p>}
 
             <label>Senha</label>
-            <PasswordInput
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            {password && (
-              <div className="password-meter">
-                <div className={`bar strength-${forcaSenha(password)}`}></div>
-                <span>
-                  {['Muito fraca', 'Fraca', 'Média', 'Forte', 'Muito forte'][forcaSenha(password)]}
-                </span>
-              </div>
-            )}
-
+            <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} />
+            
             {password && (
               <>
+                <div className="password-meter">
+                  <div className={`bar strength-${forcaSenha(password)}`}></div>
+                  <span>
+                    {['Muito fraca', 'Fraca', 'Média', 'Forte', 'Muito forte'][forcaSenha(password)]}
+                  </span>
+                </div>
+
                 <label>Confirmar Senha</label>
-                <PasswordInput
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
+                <PasswordInput value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                 {error.field === 'confirmPassword' && (
                   <p className="error-message">{error.message}</p>
                 )}
               </>
             )}
-
 
             {error.field === 'global' && (
               <p className="error-message global">{error.message}</p>
@@ -159,7 +157,6 @@ const Cadastro = () => {
             </button>
 
             <p className="login-redirect">
-              {/* <Link to="/Entrar">Esqueceu a senha?</Link>  */}
               <span>Já tem conta? <Link to="/Entrar">Entrar</Link></span>
             </p>
           </form>
