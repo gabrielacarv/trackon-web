@@ -6,7 +6,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import monitorSvg from '../assets/images/monitor-animate.svg';
 import './Cadastro.scss';
 
-const API_BASE = "http://52.14.133.217:5000/api/Autenticacao";
+const API_BASE = "http://52.14.133.217/api/Autenticacao";
 
 const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
