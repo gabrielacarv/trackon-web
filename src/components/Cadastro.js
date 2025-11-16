@@ -79,7 +79,7 @@ const Cadastro = () => {
         if (loginResponse.ok) {
           const data = await loginResponse.json();
           login({ email, token: data.token, name });
-          navigate('/user-page');
+          navigate('/Painel');
         } else {
           setError({ field: 'global', message: 'Falha ao fazer login automático.' });
         }
