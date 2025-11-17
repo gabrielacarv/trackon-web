@@ -20,7 +20,6 @@ const ConfigurarUsuario = () => {
   const [erros, setErros] = useState({});
   const navigate = useNavigate();
 
-  // Mensagens toast
   const [toast, setToast] = useState({ msg: "", type: "" });
 
   const showToast = (msg, type) => {
@@ -160,8 +159,8 @@ const ConfigurarUsuario = () => {
 
         {editandoInfo && (
           <div className="actions">
-            <button className="btn-save" onClick={salvarInfo}><Save size={18}/> Salvar</button>
-            <button className="btn-cancel" onClick={() => setEditandoInfo(false)}><X size={18}/> Cancelar</button>
+            <button className="btn-save" onClick={salvarInfo} disabled={loading}><Save size={18}/> Salvar {loading ? "Salvando..." : <><Save size={18}/> Salvar</>}</button>
+            <button className="btn-cancel" onClick={() => setEditandoInfo(false)} disabled={loading}><X size={18}/> Cancelar</button>
           </div>
         )}
       </div>

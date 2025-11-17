@@ -3,7 +3,6 @@ import { useNavigate, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { AuthContext } from '../context/AuthContext';
-import logo from '../assets/images/logo.png';
 import monitorSvg from '../assets/images/Entrar.svg';
 import './Entrar.scss';
 
