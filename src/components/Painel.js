@@ -2478,7 +2478,7 @@ const Sparkline = ({ data, color = "#45ac26" }) => {
 
 const GraficoFalhasPorHora = ({ data }) => {
   if (isEmpty(data))
-    return <div className="empty-chart">Sem falhas registradas 🎉</div>;
+    return <div className="empty-chart">Sem falhas registradas</div>;
 
   return (
     <ResponsiveContainer width="100%" height={250}>
@@ -2618,48 +2618,59 @@ const Painel = () => {
     [basePainelUrl, token, servicoSelecionado, periodo, authHeaders]
   );
 
-  const fetchUltimoRegistro = useCallback(async () => {
-    if (!basePainelUrl || !token) {
+const fetchUltimoRegistro = useCallback(async () => {
+  if (!basePainelUrl || !token) {
+    setUltimoRegistroRelativo("Sem dados");
+    setUptime("Sem dados");
+    setStatusServico(false);
+    return;
+  }
+
+  try {
+    const query = servicoSelecionado ? `?servicoId=${servicoSelecionado}` : '';
+    const url = `${basePainelUrl}/ultimo-ping${query}`;
+
+    const res = await fetch(url, { headers: authHeaders });
+    const data = res.ok ? await res.json() : null;
+
+    if (!data) {
       setUltimoRegistroRelativo("Sem dados");
       setUptime("Sem dados");
       setStatusServico(false);
       return;
     }
 
-    try {
-      const query = servicoSelecionado ? `?servicoId=${servicoSelecionado}` : '';
-      const url = `${basePainelUrl}/ultimo-ping${query}`;
+    const dt = new Date(Date.parse(data.horaPing + "Z"));
+    const rel = formatTempoRelativo(dt);
+    const up = calcularUptime(dt);
 
-      const res = await fetch(url, { headers: authHeaders });
-      const data = res.ok ? await res.json() : null;
+    const statusTexto = data.observacao?.toLowerCase();
+    let isUp = false;
 
-      if (!data) {
-        setUltimoRegistroRelativo("Sem dados");
-        setUptime("Sem dados");
-        setStatusServico(false);
-        return;
-      }
-
-      const dt = new Date(Date.parse(data.horaPing + "Z"));
-      const rel = formatTempoRelativo(dt);
-      const up = calcularUptime(dt);
-      const isUp = data.observacao?.toLowerCase().includes("sucesso");
-
-      setUltimoRegistroRelativo(rel);
-      setUptime(up);
-      setStatusServico(isUp ? "UP" : "DOWN");
-    } catch {
-      setUltimoRegistroRelativo("Erro");
-      setStatusServico("DOWN");
+    if (statusTexto?.includes("sucesso") || statusTexto?.includes("ok")) {
+      isUp = true;
+    } else if (statusTexto?.includes("falha")) {
+      isUp = false;
+    } else {
+      isUp = false;
     }
-  }, [
-    basePainelUrl,
-    token,
-    servicoSelecionado,
-    formatTempoRelativo,
-    calcularUptime,
-    authHeaders
-  ]);
+
+    setUltimoRegistroRelativo(rel);
+    setUptime(up);
+    setStatusServico(isUp ? "UP" : "DOWN");
+  } catch {
+    setUltimoRegistroRelativo("Erro");
+    setStatusServico("DOWN");
+  }
+}, [
+  basePainelUrl,
+  token,
+  servicoSelecionado,
+  formatTempoRelativo,
+  calcularUptime,
+  authHeaders
+]);
+
 
   const fetchHealthHistory = useCallback(async () => {
     if (!basePainelUrl || !token) {
