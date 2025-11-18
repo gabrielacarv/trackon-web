@@ -23,33 +23,32 @@ jobs:
         npm install
         npm run build
 
-    - name: SSH Backup and Deploy Build
+    - name: Backup and Replace Frontend Folder
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.EC2_HOST }}
-        username: ec2-user
-        key: ${{ secrets.EC2_SSH_KEY }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_KEY }}
         script: |
           timestamp=$(date +'%Y%m%d%H%M%S')
-          sudo cp -r /var/www/trackon-web /var/www/trackon-web_backup_$timestamp || true
+          sudo cp -r /var/www/trackon-web /var/www/trackonweb_backup_$timestamp || true
           sudo rm -rf /var/www/trackon-web
           sudo mkdir -p /var/www/trackon-web
-          sudo chown ec2-user:ec2-user /var/www/trackon-web
-          
-    - name: SCP Upload Build
+
+    - name: Upload Build Files
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.EC2_HOST }}
-        username: ec2-user
-        key: ${{ secrets.EC2_SSH_KEY }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_KEY }}
         source: "build/*"
         target: "/var/www/trackon-web/"
 
-    - name: Restart Nginx (SSH)
+    - name: Restart Nginx
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.EC2_HOST }}
-        username: ec2-user
-        key: ${{ secrets.EC2_SSH_KEY }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_KEY }}
         script: |
           sudo systemctl restart nginx
