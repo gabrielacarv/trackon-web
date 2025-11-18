@@ -9,7 +9,7 @@ export default function PaginaUsuario() {
 
   useEffect(() => {
     const fetchNome = async () => {
-      const res = await fetch(`http://52.14.133.217/api/Cliente/email/${user.email}`, {
+      const res = await fetch(`https://trackon.app.br/api/Cliente/email/${user.email}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
 

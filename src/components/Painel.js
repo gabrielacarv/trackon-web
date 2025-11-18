@@ -9,7 +9,7 @@ import { AuthContext } from '../context/AuthContext';
 import { faChartLine, faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const API_BASE = "http://52.14.133.217";
+const API_BASE = "https://trackon.app.br";
 
 const isEmpty = (arr) => !arr || arr.length === 0;
 const safeArray = (arr) => Array.isArray(arr) ? arr : [];
@@ -297,6 +297,25 @@ const Painel = () => {
     const qs = params.toString();
     return qs ? `?${qs}` : '';
   }, [servicoSelecionado, periodo]);
+
+    useEffect(() => {
+  if (!uptime24h || uptime24h.length === 0) {
+    setIncidentCount(0);
+    return;
+  }
+
+  const totalFalhas = uptime24h.reduce((acc, item) =>
+    acc + (item.quantidadeFalha ?? 0), 0);
+
+  setIncidentCount(totalFalhas);
+}, [uptime24h]);
+
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/entrar');
+    }
+  }, [user, navigate]);
 
   const fetchData = useCallback(
     async (endpoint, setter, includeDias = true) => {
@@ -591,7 +610,7 @@ const fetchUltimoRegistro = useCallback(async () => {
     basePainelUrl,
     token,
     servicoSelecionado,
-    periodo,
+    // periodo,
     fetchData,
     fetchUltimoRegistro,
     fetchHealthHistory,

@@ -18,7 +18,7 @@ const AuthProvider = ({ children }) => {
 
       const fetchCustomer = async (user) => {
         try {
-          const response = await fetch(`http://52.14.133.217/api/Cliente/email/${encodeURIComponent(user.email)}`, {
+          const response = await fetch(`https://trackon.app.br/api/Cliente/email/${encodeURIComponent(user.email)}`, {
           method: 'GET',
           headers: {
           'Content-Type': 'application/json',

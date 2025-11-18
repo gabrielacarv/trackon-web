@@ -30,7 +30,7 @@ const ConfigurarUsuario = () => {
   useEffect(() => {
     const fetchCliente = async () => {
       try {
-        const response = await fetch(`http://52.14.133.217/api/Cliente/email/${user.email}`, {
+        const response = await fetch(`https://trackon.app.br/api/Cliente/email/${user.email}`, {
           headers: { 'Authorization': `Bearer ${user.token}` },
         });
 
@@ -73,7 +73,7 @@ const ConfigurarUsuario = () => {
     setLoading(true);
 
     try {
-      const resp = await fetch(`http://52.14.133.217/api/Cliente/${clienteId}`, {
+      const resp = await fetch(`https://trackon.app.br/api/Cliente/${clienteId}`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${user.token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(dadosCliente)
@@ -92,7 +92,7 @@ const ConfigurarUsuario = () => {
     setLoading(true);
 
     try {
-      const resp = await fetch(`http://52.14.133.217/api/Cliente/${clienteId}/senha`, {
+      const resp = await fetch(`https://trackon.app.br/api/Cliente/${clienteId}/senha`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${user.token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ senhaAtual, novaSenha })

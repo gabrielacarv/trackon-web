@@ -18,7 +18,7 @@ const ServicosCadastrados = () => {
   useEffect(() => {
     const fetchCliente = async () => {
       try {
-        const res = await fetch(`https://localhost:7257/api/Cliente/email/${user.email}`, {
+        const res = await fetch(`https://trackon.app.br/api/Cliente/email/${user.email}`, {
           headers: { Authorization: `Bearer ${user.token}` }
         });
         const cliente = await res.json();
@@ -35,7 +35,7 @@ const ServicosCadastrados = () => {
 
     const fetchServicos = async () => {
       try {
-        const res = await fetch(`https://localhost:7257/api/Servico/Cliente/${clienteId}`, {
+        const res = await fetch(`https://trackon.app.br/api/Servico/Cliente/${clienteId}`, {
           headers: { Authorization: `Bearer ${user.token}` }
         });
         setServicos(await res.json());
@@ -53,13 +53,13 @@ const ServicosCadastrados = () => {
   };
 
   const handleSaveEdit = async () => {
-    await fetch(`https://localhost:7257/api/Servico/${editing}`, {
+    await fetch(`https://trackon.app.br/api/Servico/${editing}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${user.token}` },
       body: JSON.stringify({ id: editing, url: editedUrl, tipo: parseInt(editedType), clienteId, ativo: true })
     });
 
-    const res = await fetch(`https://localhost:7257/api/Servico/Cliente/${clienteId}`, {
+    const res = await fetch(`https://trackon.app.br/api/Servico/Cliente/${clienteId}`, {
       headers: { Authorization: `Bearer ${user.token}` }
     });
     setServicos(await res.json());
@@ -69,7 +69,7 @@ const ServicosCadastrados = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Confirma excluir este serviço?')) return;
 
-    await fetch(`https://localhost:7257/api/Servico/${id}`, {
+    await fetch(`https://trackon.app.br/api/Servico/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${user.token}` }
     });

@@ -20,7 +20,7 @@ const GerenciarServico = () => {
   useEffect(() => {
     const fetchCliente = async () => {
       try {
-        const res = await fetch(`http://52.14.133.217/api/Cliente/email/${user.email}`, {
+        const res = await fetch(`https://trackon.app.br/api/Cliente/email/${user.email}`, {
           headers: { Authorization: `Bearer ${user.token}` }
         });
         if (res.ok) {
@@ -72,7 +72,7 @@ const handleDeleteService = (index) => {
           clienteId
         };
 
-        await fetch('http://52.14.133.217/api/Servico', {
+        await fetch('https://trackon.app.br/api/Servico', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

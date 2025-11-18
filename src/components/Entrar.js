@@ -21,7 +21,7 @@ const Entrar = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://52.14.133.217/api/Autenticacao/autenticar', {
+      const response = await fetch('https://trackon.app.br/api/Autenticacao/autenticar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, senha }),
