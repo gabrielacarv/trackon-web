@@ -3,15 +3,16 @@ $secondary-color: #60b000;
 $tertiary-color: #FF7D2D;
 $light-color: #f8f9fa;
 $dark-color: #343a40;
-/* Hero ocupa a tela inteira */
+
+/* ===========================
+   HERO SECTION
+   =========================== */
 .hero {
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  // background: linear-gradient(135deg, #f8f9fa 0%, #ececec 100%);
-  background:#fff;
-  // padding: 2rem 2rem;
+  background: #fff;
 
   .hero-content {
     display: flex;
@@ -21,7 +22,8 @@ $dark-color: #343a40;
     max-width: 1200px;
     width: 100%;
 
-    @media (max-width: 900px) {
+    @media (max-width: 1024px) {
+      gap: 3rem;
       flex-direction: column;
       text-align: center;
     }
@@ -33,18 +35,35 @@ $dark-color: #343a40;
     .logo {
       max-width: 420px;
       margin-bottom: 0rem;
+
+      @media (max-width: 1024px) {
+        max-width: 300px;
+      }
+
+      @media (max-width: 600px) {
+        max-width: 220px;
+      }
     }
 
     h1 {
       font-size: 2.1rem;
       color: #1b375b;
       margin-bottom: 1rem;
+
+      @media (max-width: 600px) {
+        font-size: 1.7rem;
+      }
     }
 
     p {
       font-size: 1.25rem;
       color: #555;
       margin-bottom: 2rem;
+
+      @media (max-width: 600px) {
+        font-size: 1.05rem;
+        padding: 0 1rem;
+      }
     }
 
     .cta-btn {
@@ -65,59 +84,55 @@ $dark-color: #343a40;
   }
 
   .hero-illustration {
-  flex: 1.2; // dá mais espaço que o texto
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
+    flex: 1.2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
 
-  img {
-    // width: 95%; // agora ela expande MUITO mais
-    max-width: 1000px; // limite pra telas grandes (pode aumentar se quiser)
-    height: auto;
-
-    border-radius: 15px;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.18);
-    transform: perspective(1200px) rotateY(-6deg) rotateX(2deg);
-    border: 1px solid rgba(0,0,0,0.08);
-    transition: all .4s ease;
-
-    &:hover {
-      // transform: perspective(1200px) rotateY(0deg) rotateX(0deg) scale(1.03);
-      box-shadow: 0 35px 70px rgba(0,0,0,0.25);
+    /* 🚫 Some fora do desktop */
+    @media (max-width: 1024px) {
+      display: none !important;
     }
-  }
 
-  // brilho atrás
-  &::after {
-    content: "";
-    position: absolute;
-    width: 90%;
-    height: 90%;
-    background: rgba(69,172,38,0.12);
-    filter: blur(120px);
-    z-index: -1;
-    border-radius: 50%;
-  }
-
-  @media (max-width: 900px) {
     img {
-      width: 100%;
-      max-width: none;
-      transform: none;
+      max-width: 1000px;
+      height: auto;
+      border-radius: 15px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+      transform: perspective(1200px) rotateY(-6deg) rotateX(2deg);
+      border: 1px solid rgba(0,0,0,0.08);
+      transition: all .4s ease;
+
+      &:hover {
+        box-shadow: 0 35px 70px rgba(0,0,0,0.25);
+      }
+
+      @media (max-width: 1400px) {
+        max-width: 850px;
+      }
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      width: 90%;
+      height: 90%;
+      background: rgba(69,172,38,0.12);
+      filter: blur(120px);
+      z-index: -1;
+      border-radius: 50%;
     }
   }
 }
 
-}
 
-
-
-/* Features com fundo diferente */
+/* ===========================
+   FEATURES
+   =========================== */
 .features {
-  background: #f8f9fa; // cinza claro para destacar
+  background: #f8f9fa;
   padding: 5rem 2rem;
-  // padding-bottom: 0;
   text-align: center;
 
   h2 {
@@ -173,31 +188,26 @@ $dark-color: #343a40;
   }
 }
 
-// .footer {
-//   // background: #1b375b;
-//   color: #fff;
-//   padding: 3rem 2rem 1rem;
-//   margin-top: 5rem;
-//   background: linear-gradient(180deg, #1b375b 0%, #10223d 100%);
+
+/* ===========================
+   FOOTER
+   =========================== */
 .footer {
   background: linear-gradient(180deg, #1b375b 0%, #10223d 100%);
   color: #fff;
   padding: 3rem 2rem 1rem;
-  // margin-top: 5rem;
 
-  /* ---- CONTEÚDO PRINCIPAL ---- */
   .footer-content {
     display: flex;
-    justify-content: center;        /* centraliza horizontalmente */
-    align-items: center;            /* centraliza verticalmente */
+    justify-content: center;
+    align-items: center;
     flex-wrap: wrap;
     max-width: 1200px;
     margin: 0 auto;
-    gap: 4rem;                      /* espaço equilibrado entre colunas */
-    text-align: center;             /* centraliza o texto visualmente */
+    gap: 4rem;
+    text-align: center;
   }
 
-  /* ---- BLOCO ESQUERDO (TÍTULO + TEXTO) ---- */
   .footer-left {
     flex: 1;
     min-width: 300px;
@@ -214,11 +224,10 @@ $dark-color: #343a40;
       color: #dfe7f1;
       line-height: 1.6;
       max-width: 420px;
-      margin: 0 auto;               /* centraliza dentro da coluna */
+      margin: 0 auto;
     }
   }
 
-  /* ---- BLOCO DIREITO (CONTATO) ---- */
   .footer-contact {
     flex: 1;
     min-width: 250px;
@@ -243,7 +252,6 @@ $dark-color: #343a40;
     }
   }
 
-  /* ---- RODAPÉ INFERIOR ---- */
   .footer-bottom {
     text-align: center;
     margin-top: 2rem;
@@ -256,15 +264,10 @@ $dark-color: #343a40;
     }
   }
 
-  /* ---- RESPONSIVIDADE ---- */
   @media (max-width: 800px) {
     .footer-content {
       flex-direction: column;
       gap: 2rem;
-    }
-
-    .footer-left p {
-      max-width: 100%;
     }
   }
 }
