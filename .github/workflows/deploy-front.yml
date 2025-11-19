@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
+    - name: Checkout Repository
       uses: actions/checkout@v3
 
     - name: Setup Node
@@ -18,12 +18,12 @@ jobs:
       with:
         node-version: "18"
 
-    - name: Build React App
+    - name: Install and Build React
       run: |
-        npm install
+        npm ci
         npm run build
 
-    - name: Backup and Prepare Frontend Folder
+    - name: Prepare Web Directory
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.EC2_HOST }}
@@ -31,14 +31,19 @@ jobs:
         key: ${{ secrets.EC2_KEY }}
         script: |
           timestamp=$(date +'%Y%m%d%H%M%S')
-          # BACKUP DA VERSÃO ATUAL
-          sudo cp -r /var/www/trackon-web "/var/www/trackon-web_backup_$timestamp" || true
-          # LIMPA DIRETÓRIO EXISTENTE
-          sudo rm -rf /var/www/trackon-web/*
-          sudo chown -R nginx:nginx /var/www/trackon-web
-          sudo chmod -R 755 /var/www/trackon-web
 
-    - name: Upload Build Files
+          echo "Criando backup do front atual..."
+          sudo mkdir -p /var/www
+          if [ -d /var/www/trackon-web ]; then
+            sudo cp -r /var/www/trackon-web "/var/www/trackon-web_backup_$timestamp"
+          fi
+
+          echo "Limpando diretório antigo..."
+          sudo rm -rf /var/www/trackon-web
+          sudo mkdir -p /var/www/trackon-web
+          sudo chown -R ec2-user:ec2-user /var/www/trackon-web
+
+    - name: Upload Build to EC2
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.EC2_HOST }}
@@ -47,7 +52,7 @@ jobs:
         source: "build/*"
         target: "/var/www/trackon-web/"
 
-    - name: Permissions and Restart Nginx
+    - name: Finalize Deployment
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.EC2_HOST }}
@@ -56,5 +61,8 @@ jobs:
         script: |
           sudo chown -R nginx:nginx /var/www/trackon-web
           sudo chmod -R 755 /var/www/trackon-web
-          sudo systemctl restart nginx
-          echo "Deploy concluído com sucesso 🎯"
+
+          echo "🔄 Recarregando o Nginx..."
+          sudo systemctl reload nginx
+
+          echo "Deploy do front concluído com sucesso!"
