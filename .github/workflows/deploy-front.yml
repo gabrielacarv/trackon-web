@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
+    - name: Checkout Repository
       uses: actions/checkout@v3
 
     - name: Setup Node
@@ -18,37 +18,57 @@ jobs:
       with:
         node-version: "18"
 
-    - name: Build React App
+    - name: Install Dependencies and Build
       run: |
-        npm install
+        npm ci
         npm run build
 
-    - name: Backup and Replace Frontend Folder
+    - name: Stop and Prepare Web Directory on EC2
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_KEY }}
         script: |
-          timestamp=$(date +'%Y%m%d%H%M%S')
-          sudo cp -r /var/www/trackon-web /var/www/trackonweb_backup_$timestamp || true
+          echo "➡ Criando pasta base /var/www..."
+          sudo mkdir -p /var/www
+
+          echo "➡ Backup do front antigo..."
+          if [ -d /var/www/trackon-web ]; then
+            timestamp=$(date +'%Y%m%d%H%M%S')
+            sudo cp -r /var/www/trackon-web "/var/www/trackon-web_backup_$timestamp"
+            echo "Backup criado: /var/www/trackon-web_backup_$timestamp"
+          fi
+
+          echo "➡ Limpando diretório antigo..."
           sudo rm -rf /var/www/trackon-web
           sudo mkdir -p /var/www/trackon-web
+          sudo chown -R ec2-user:ec2-user /var/www/trackon-web
+          sudo chmod -R 755 /var/www/trackon-web
 
-    - name: Upload Build Files
+    - name: Upload Build to EC2
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_KEY }}
-        source: "build/*"
+        source: "build/**"
         target: "/var/www/trackon-web/"
+        overwrite: true
+        strip_components: 1
 
-    - name: Restart Nginx
+    - name: Finalize Deployment
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_KEY }}
         script: |
-          sudo systemctl restart nginx
+          echo "➡ Ajustando permissões para o Nginx..."
+          sudo chown -R nginx:nginx /var/www/trackon-web
+          sudo chmod -R 755 /var/www/trackon-web
+
+          echo "➡ Recarregando Nginx..."
+          sudo systemctl reload nginx
+
+          echo "🎉 Deploy do front concluído com sucesso!"
