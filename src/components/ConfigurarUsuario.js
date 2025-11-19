@@ -63,7 +63,7 @@ const ConfigurarUsuario = () => {
       novosErros.novaSenha = 'Deve ter 8 caracteres, 1 maiúscula, 1 número e 1 símbolo.';
     if (novaSenha !== confirmarSenha)
       novosErros.confirmarSenha = 'Senhas não coincidem.';
-    
+
     setErros(novosErros);
     return Object.keys(novosErros).length === 0;
   };
@@ -159,8 +159,19 @@ const ConfigurarUsuario = () => {
 
         {editandoInfo && (
           <div className="actions">
-            <button className="btn-save" onClick={salvarInfo} disabled={loading}><Save size={18}/> Salvar {loading ? "Salvando..." : <><Save size={18}/> Salvar</>}</button>
-            <button className="btn-cancel" onClick={() => setEditandoInfo(false)} disabled={loading}><X size={18}/> Cancelar</button>
+            <button className="btn-save" onClick={salvarInfo} disabled={loading}>
+              {loading ? (
+                <>
+                  <Save size={18} /> Salvando...
+                </>
+              ) : (
+                <>
+                  <Save size={18} /> Salvar
+                </>
+              )}
+            </button>
+
+            <button className="btn-cancel" onClick={() => setEditandoInfo(false)} disabled={loading}><X size={18} /> Cancelar</button>
           </div>
         )}
       </div>
@@ -183,11 +194,11 @@ const ConfigurarUsuario = () => {
               <input type="password" value={senhaAtual} onChange={(e) => setSenhaAtual(e.target.value)} />
 
               <label>Nova senha</label>
-              <input type="password" value={novaSenha} onChange={(e) => setNovaSenha(e.target.value)} className={erros.novaSenha ? 'input-error' : ''}/>
+              <input type="password" value={novaSenha} onChange={(e) => setNovaSenha(e.target.value)} className={erros.novaSenha ? 'input-error' : ''} />
               {erros.novaSenha && <span className="error">{erros.novaSenha}</span>}
 
               <label>Confirmar nova senha</label>
-              <input type="password" value={confirmarSenha} onChange={(e) => setConfirmarSenha(e.target.value)} className={erros.confirmarSenha ? 'input-error' : ''}/>
+              <input type="password" value={confirmarSenha} onChange={(e) => setConfirmarSenha(e.target.value)} className={erros.confirmarSenha ? 'input-error' : ''} />
               {erros.confirmarSenha && <span className="error">{erros.confirmarSenha}</span>}
             </>
           )}
@@ -195,14 +206,14 @@ const ConfigurarUsuario = () => {
 
         {editandoSenha && (
           <div className="actions">
-            <button className="btn-save" onClick={salvarSenha}><Save size={18}/> Salvar</button>
-            <button className="btn-cancel" onClick={() => setEditandoSenha(false)}><X size={18}/> Cancelar</button>
+            <button className="btn-save" onClick={salvarSenha}><Save size={18} /> Salvar</button>
+            <button className="btn-cancel" onClick={() => setEditandoSenha(false)}><X size={18} /> Cancelar</button>
           </div>
         )}
       </div>
 
       <button className="btn-back" onClick={() => navigate('/PaginaUsuario')}>
-        <ArrowLeft size={16}/> Voltar ao painel
+        <ArrowLeft size={16} /> Voltar ao painel
       </button>
     </div>
   );
