@@ -46,7 +46,6 @@ const Entrar = () => {
   return (
     <div className="login-page">
       <div className="login-left">
-        {/* <img src={logo} alt="TrackOn" className="login-logo" /> */}
         <h1>Bem-vindo</h1>
         <p>Monitore seus serviços, visualize relatórios e mantenha seu site sempre online.</p>
         <img src={monitorSvg} alt="Monitoramento" className="login-illustration" />
@@ -69,19 +68,22 @@ const Entrar = () => {
             <label>Senha</label>
             <div className="password-container">
               <input
-                type={passwordVisible ? 'text' : 'password'}
+                type="text"
                 placeholder="Digite sua senha"
+                className={passwordVisible ? "pass-visible" : "pass-hidden"}
                 value={senha}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+
               <span
                 className="password-toggle-icon"
                 onClick={() => setPasswordVisible(!passwordVisible)}
               >
-                <FontAwesomeIcon icon={passwordVisible ? faEyeSlash : faEye} />
+                <FontAwesomeIcon icon={passwordVisible ? faEye : faEyeSlash} />
               </span>
             </div>
+
 
             {error && <p className="error-message">{error}</p>}
 

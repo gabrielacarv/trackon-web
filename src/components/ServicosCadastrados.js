@@ -8,27 +8,12 @@ const ServicosCadastrados = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  const clienteId = user?.id;
   const [servicos, setServicos] = useState([]);
-  const [clienteId, setClienteId] = useState(null);
   const [editing, setEditing] = useState(null);
   const [editedUrl, setEditedUrl] = useState('');
   const [editedType, setEditedType] = useState('1');
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchCliente = async () => {
-      try {
-        const res = await fetch(`https://trackon.app.br/api/Cliente/email/${user.email}`, {
-          headers: { Authorization: `Bearer ${user.token}` }
-        });
-        const cliente = await res.json();
-        setClienteId(cliente.id);
-      } catch {
-        setLoading(false);
-      }
-    };
-    fetchCliente();
-  }, [user]);
 
   useEffect(() => {
     if (!clienteId) return;
@@ -38,51 +23,76 @@ const ServicosCadastrados = () => {
         const res = await fetch(`https://trackon.app.br/api/Servico/Cliente/${clienteId}`, {
           headers: { Authorization: `Bearer ${user.token}` }
         });
-        setServicos(await res.json());
-      } catch {}
-      setLoading(false);
+
+        const data = await res.json();
+        setServicos(data);
+      } catch {
+        console.error("Erro ao carregar serviços");
+      } finally {
+        setLoading(false);
+      }
     };
+
     fetchServicos();
-  }, [clienteId, user]);
+  }, [clienteId, user.token]);
 
   const handleEdit = (s) => {
     setEditing(s.id);
-    setEditedUrl(s.url);
+    setEditedUrl(s.enderecoUrl);
     setEditedType(s.tipo.toString());
-            console.log(s.tipo);
   };
 
   const handleSaveEdit = async () => {
-    await fetch(`https://trackon.app.br/api/Servico/${editing}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${user.token}` },
-      body: JSON.stringify({ id: editing, url: editedUrl, tipo: parseInt(editedType), clienteId, ativo: true })
-    });
+    try {
+      await fetch(`https://trackon.app.br/api/Servico/${editing}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token}`
+        },
+        body: JSON.stringify({
+          id: editing,
+          url: editedUrl,
+          tipo: parseInt(editedType),
+          clienteId,
+          ativo: true
+        })
+      });
 
-    const res = await fetch(`https://trackon.app.br/api/Servico/Cliente/${clienteId}`, {
-      headers: { Authorization: `Bearer ${user.token}` }
-    });
-    setServicos(await res.json());
-    setEditing(null);
+      const res = await fetch(`https://trackon.app.br/api/Servico/Cliente/${clienteId}`, {
+        headers: { Authorization: `Bearer ${user.token}` }
+      });
+
+      setServicos(await res.json());
+      setEditing(null);
+
+    } catch (err) {
+      console.error("Erro ao salvar edição", err);
+    }
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm('Confirma excluir este serviço?')) return;
 
-    await fetch(`https://trackon.app.br/api/Servico/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${user.token}` }
-    });
+    try {
+      await fetch(`https://trackon.app.br/api/Servico/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${user.token}` }
+      });
 
-    setServicos(servicos.filter(s => s.id !== id));
+      setServicos(servicos.filter(s => s.id !== id));
+
+    } catch (err) {
+      console.error("Erro ao deletar serviço", err);
+    }
   };
 
-  // if (loading) return <div className='loader-page'><div className='loader'></div></div>;
   if (!user) return <div className="loading-overlay"><div className="loader" /></div>;
   if (loading) return <div className="loading-overlay"><div className="loader" /></div>;
 
   return (
-    <div className="dashboard-modern"> 
+    <div className="dashboard-modern">
+
       <header className="dashboard-header">
         <div className="header-left">
           <h2>Meus Serviços</h2>
@@ -93,49 +103,77 @@ const ServicosCadastrados = () => {
       {servicos.length === 0 ? (
         <div className="empty-state">
           <p>Nenhum serviço cadastrado ainda.</p>
-          <button className="btn-primary" onClick={() => navigate('/PaginaUsuario/adicionar-servicos')}>
-            <PlusCircle size={18}/> Adicionar primeiro serviço
+
+          <button className="btn-primary"
+            onClick={() => navigate('/PaginaUsuario/adicionar-servicos')}>
+            <PlusCircle size={18} /> Adicionar primeiro serviço
           </button>
         </div>
+
       ) : (
         <div className="service-grid">
           {servicos.map(s => (
             <div className="service-card" key={s.id}>
+
               {editing === s.id ? (
                 <>
-                  <input value={editedUrl} onChange={e=>setEditedUrl(e.target.value)} className="input"/>
-                  <select value={editedType} onChange={e=>setEditedType(e.target.value)} className="input">
+                  <input
+                    value={editedUrl}
+                    onChange={e => setEditedUrl(e.target.value)}
+                    className="input"
+                  />
+
+                  <select
+                    value={editedType}
+                    onChange={e => setEditedType(e.target.value)}
+                    className="input"
+                  >
                     <option value="1">Http</option>
                     <option value="2">Ping</option>
                   </select>
+
                   <div className="card-actions">
-                    <button className="btn-save" onClick={handleSaveEdit}><Save size={18}/></button>
+                    <button className="btn-save" onClick={handleSaveEdit}>
+                      <Save size={18} />
+                    </button>
                   </div>
                 </>
               ) : (
                 <>
                   <div className="service-info">
+
                     <div className="service-top-row">
                       <span className="badge">{s.tipo === 1 ? 'Http' : 'Ping'}</span>
 
                       <div className="card-actions">
-                        <button onClick={() => handleEdit(s)}><Edit size={18} /></button>
-                        <button className="delete" onClick={() => handleDelete(s.id)}><Trash size={18} /></button>
+                        <button onClick={() => handleEdit(s)}>
+                          <Edit size={18} />
+                        </button>
+
+                        <button className="delete" onClick={() => handleDelete(s.id)}>
+                          <Trash size={18} />
+                        </button>
                       </div>
                     </div>
 
-                    <h4 className="service-url" title={s.enderecoUrl}>{s.enderecoUrl}</h4>
+                    <h4 className="service-url" title={s.enderecoUrl}>
+                      {s.enderecoUrl}
+                    </h4>
+
                   </div>
                 </>
               )}
+
             </div>
           ))}
         </div>
       )}
 
-      <button className="btn-secondary back" onClick={() => navigate('/PaginaUsuario/painel')}>
-        <ArrowLeft size={16}/> Voltar ao Painel
+      <button className="btn-secondary back"
+        onClick={() => navigate('/PaginaUsuario/painel')}>
+        <ArrowLeft size={16} /> Voltar ao Painel
       </button>
+
     </div>
   );
 };

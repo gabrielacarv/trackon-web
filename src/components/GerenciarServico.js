@@ -1,39 +1,19 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Edit, Trash, ArrowLeft } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
-
-import './GerenciarServico.scss'; // aproveitar a estética
+import './GerenciarServico.scss';
 
 const GerenciarServico = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  const clienteId = user?.id;
+
   const [rows, setRows] = useState([{ url: '', type: '1' }]);
   const [servicesToSave, setServicesToSave] = useState([]);
-  const [clienteId, setClienteId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [urlError, setUrlError] = useState('');
-  const [error, setError] = useState('');
-
-  // Carregar ID do cliente
-  useEffect(() => {
-    const fetchCliente = async () => {
-      try {
-        const res = await fetch(`https://trackon.app.br/api/Cliente/email/${user.email}`, {
-          headers: { Authorization: `Bearer ${user.token}` }
-        });
-        if (res.ok) {
-          const dados = await res.json();
-          setClienteId(dados.id);
-        } else setError('Erro ao carregar cliente.');
-      } catch {
-        setError('Erro ao buscar cliente.');
-      }
-    };
-
-    if (user?.email) fetchCliente();
-  }, [user]);
 
   const handleAdd = (i) => {
     const item = rows[i];
@@ -44,21 +24,21 @@ const GerenciarServico = () => {
 
     setUrlError('');
     setServicesToSave([...servicesToSave, item]);
+
     const nova = [...rows];
     nova[i] = { url: '', type: '1' };
     setRows(nova);
   };
 
   const handleEditService = (index) => {
-  const serviceToEdit = servicesToSave[index];
-  setRows([{ url: serviceToEdit.url, type: serviceToEdit.type }]);
-  setServicesToSave(servicesToSave.filter((_, i) => i !== index));
-};
+    const serviceToEdit = servicesToSave[index];
+    setRows([{ url: serviceToEdit.url, type: serviceToEdit.type }]);
+    setServicesToSave(servicesToSave.filter((_, i) => i !== index));
+  };
 
-const handleDeleteService = (index) => {
-  setServicesToSave(servicesToSave.filter((_, i) => i !== index));
-};
-
+  const handleDeleteService = (index) => {
+    setServicesToSave(servicesToSave.filter((_, i) => i !== index));
+  };
 
   const handleSave = async () => {
     if (!clienteId) return alert('Cliente não carregado ainda.');
@@ -67,7 +47,7 @@ const handleDeleteService = (index) => {
     try {
       for (const svc of servicesToSave) {
         const payload = {
-          url: svc.url,
+          enderecoUrl: svc.url,
           tipo: parseInt(svc.type),
           clienteId
         };
@@ -76,7 +56,7 @@ const handleDeleteService = (index) => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${user.token}`
+            Authorization: `Bearer ${user.token}`,
           },
           body: JSON.stringify(payload)
         });
@@ -105,63 +85,73 @@ const handleDeleteService = (index) => {
         </div>
       </header>
 
-      {error && <div style={{color:'red'}}>{error}</div>}
-
-      <div className="chart-card large-card" style={{padding:"2rem"}}>
-        {/* Cabeçalho da tabela */}
-        <div className="header" style={{display:'grid',gridTemplateColumns:'2fr 1fr 80px',fontWeight:'600',marginBottom:'1rem'}}>
+      <div className="chart-card large-card" style={{ padding: "2rem" }}>
+        <div className="header" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 80px', fontWeight: '600', marginBottom: '1rem' }}>
           <span>URL do Serviço</span>
           <span>Tipo</span>
           <span>Ação</span>
         </div>
 
-        {/* Linha de adição */}
-        {rows.map((row,i)=>(
-          <div key={i} style={{display:'grid',gridTemplateColumns:'2fr 1fr 80px',gap:'10px',marginBottom:'10px'}}>
-            <input value={row.url} onChange={e=>{
-              const cp=[...rows]; cp[i].url=e.target.value; setRows(cp);
-            }} placeholder="https://seusite.com" />
-            <select value={row.type} onChange={e=>{
-              const cp=[...rows]; cp[i].type=e.target.value; setRows(cp);
-            }}>
+        {rows.map((row, i) => (
+          <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 80px', gap: '10px', marginBottom: '10px' }}>
+            <input
+              value={row.url}
+              onChange={e => {
+                const cp = [...rows];
+                cp[i].url = e.target.value;
+                setRows(cp);
+              }}
+              placeholder="https://seusite.com"
+            />
+
+            <select
+              value={row.type}
+              onChange={e => {
+                const cp = [...rows];
+                cp[i].type = e.target.value;
+                setRows(cp);
+              }}
+            >
               <option value="1">Http</option>
               <option value="2">Ping</option>
             </select>
-            <button className="add-service-button" title="Adicionar" onClick={()=>handleAdd(i)}>+</button>
+
+            <button className="add-service-button" title="Adicionar" onClick={() => handleAdd(i)}>+</button>
           </div>
         ))}
 
-        {urlError && <p style={{color:'red'}}>{urlError}</p>}
+        {urlError && <p style={{ color: 'red' }}>{urlError}</p>}
       </div>
 
-      {/* Lista de itens para salvar */}
-      {servicesToSave.length>0 && (
-        <div className="chart-card" style={{marginTop:'1rem'}}>
+      {servicesToSave.length > 0 && (
+        <div className="chart-card" style={{ marginTop: '1rem' }}>
           <h3>Serviços pendentes</h3>
-          {servicesToSave.map((svc,idx)=>(
-            <div key={idx} className="service-item" style={{display:'flex',justifyContent:'space-between',padding:'10px',borderBottom:'1px solid #eee'}}>
-              <span>{svc.url} — {svc.type==='1'? 'Http':'Ping'}</span>
 
-                <div style={{display:'flex',gap:'0.5rem'}}>
-                  <button className="icon-button" title="Editar" onClick={() => handleEditService(idx)}>
-                    <Edit size={18} />
-                  </button>
+          {servicesToSave.map((svc, idx) => (
+            <div key={idx} className="service-item" style={{ display: 'flex', justifyContent: 'space-between', padding: '10px', borderBottom: '1px solid #eee' }}>
+              <span>{svc.url} — {svc.type === '1' ? 'Http' : 'Ping'}</span>
 
-                  <button className="icon-button Excluir" title="Excluir" onClick={() => handleDeleteService(idx)}>
-                    <Trash size={18} />
-                  </button>
-                </div>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button className="icon-button" title="Editar" onClick={() => handleEditService(idx)}>
+                  <Edit size={18} />
+                </button>
+
+                <button className="icon-button Excluir" title="Excluir" onClick={() => handleDeleteService(idx)}>
+                  <Trash size={18} />
+                </button>
+              </div>
 
             </div>
           ))}
-          <div style={{marginTop:'2rem',display:'flex',justifyContent:'flex-end',gap:'1rem'}}>
-        <button className="save-button" onClick={handleSave} disabled={servicesToSave.length===0}>Salvar</button>
-      </div>
+
+          <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+            <button className="save-button" onClick={handleSave} disabled={servicesToSave.length === 0}>Salvar</button>
+          </div>
         </div>
       )}
-    
+
       <button className="btn-back" onClick={() => navigate('/PaginaUsuario')}>
-        <ArrowLeft size={16}/> Voltar ao painel
+        <ArrowLeft size={16} /> Voltar ao painel
       </button>
     </div>
   );

@@ -1,16 +1,15 @@
-$primary-color: #131a26; /* Azul */
-// #1b375b
-// #1C2434
-$secondary-color: #60b000; /* Verde */
-$tertiary-color: #FF7D2D; /* Laranja */
-$light-color: #f8f9fa; /* Cor clara para fundos */
-$dark-color: #343a40; /* Cor escura para textos */
+$primary-color: #131a26;
+$secondary-color: #60b000;
+$tertiary-color: #FF7D2D;
+$light-color: #f8f9fa;
+$dark-color: #343a40;
 
 * {
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -26,7 +25,6 @@ body {
 }
 
 header {
-  //background-color: $primary-color;
   background-color: #fff;
   color: #fff;
   padding: 1rem;
@@ -34,12 +32,9 @@ header {
   align-items: center;
   justify-content: space-between;
   transition: all 0.3s;
-  // box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding-left: 30px;
   padding-right: 30px;
   font-weight: 500;
-  // border-bottom: 1px solid #dee2e6; // mesma cor que seu sistema usa nas bordas suaves
-
 
   .logo {
     height: 45px;
@@ -51,7 +46,8 @@ header {
     align-items: center;
     gap: 1rem;
 
-    a, span {
+    a,
+    span {
       color: #1b375b;
       text-decoration: none;
       padding: 0.5rem 1rem;
@@ -60,7 +56,6 @@ header {
       font-size: 1.1rem;
 
       &:hover {
-        // background-color: darken(#fff, 5%);
         color: #60b000;
       }
     }
@@ -72,7 +67,6 @@ header {
       padding: 0.75rem 1.5rem;
       border-radius: 5px;
       cursor: pointer;
-      // transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s;
       box-shadow: none;
       font-size: 1.1rem;
       text-decoration: none;
@@ -80,7 +74,6 @@ header {
       font-weight: 500;
 
       &:hover {
-        // background-color: darken(#fff, 5%);
         color: #60b000;
       }
     }
@@ -122,7 +115,7 @@ header {
   z-index: 1000;
 }
 
-.sticky + .container {
+.sticky+.container {
   padding-top: 102px;
 }
 
@@ -130,30 +123,6 @@ header {
   flex: 1;
   padding: 0rem;
 }
-
-//  button {
-//   background-color: $secondary-color;
-//   color: #fff;
-//   border: none;
-//   padding: 0.75rem 1.5rem;
-//   border-radius: 5px;
-//   cursor: pointer;
-//   transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s;
-//   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-//   font-size: 1rem;
-// }
-
-
-// button:hover {
-//   background-color: darken($secondary-color, 10%);
-//   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-//   transform: translateY(-2px);
-// }
-
-// button:focus {
-//   outline: none;
-//   box-shadow: 0 0 0 3px rgba($secondary-color, 0.5);
-// }
 
 footer {
   background-color: lighten($secondary-color, 20%);

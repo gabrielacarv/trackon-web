@@ -21,21 +21,28 @@ const forcaSenha = (senha) => {
 
 const PasswordInput = ({ label, value, onChange }) => {
   const [visible, setVisible] = useState(false);
+
   return (
     <div className="password-container">
       <label>{label}</label>
+
       <input
-        type={visible ? 'text' : 'password'}
+        type="text"
+        className={visible ? "pass-visible" : "pass-hidden"}
         value={value}
         onChange={onChange}
-        required
       />
-      <span className="password-toggle-icon" onClick={() => setVisible(!visible)}>
-        <FontAwesomeIcon icon={visible ? faEyeSlash : faEye} />
+
+      <span
+        className="password-toggle-icon"
+        onClick={() => setVisible(!visible)}
+      >
+        <FontAwesomeIcon icon={visible ? faEye : faEyeSlash} />
       </span>
     </div>
   );
 };
+
 
 const Cadastro = () => {
   const [name, setName] = useState('');
@@ -130,7 +137,7 @@ const Cadastro = () => {
 
             <label>Senha</label>
             <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} />
-            
+
             {password && (
               <>
                 <div className="password-meter">

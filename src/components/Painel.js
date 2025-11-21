@@ -22,70 +22,6 @@ const StatCard = ({ title, value, description }) => (
   </div>
 );
 
-// const CalendarHeatmap = ({ data }) => {
-//   if (isEmpty(data)) return <div className="empty-chart">Sem dados</div>;
-
-//   const getColor = (value) => {
-//     if (value >= 99.99) return '#006400';
-//     if (value >= 99.5) return '#3CB371';
-//     if (value >= 95) return '#FFD700';
-//     return '#DC143C';
-//   };
-
-//   return (
-//     <div className="calendar-heatmap">
-//       {data.map((d, i) => (
-//         <div
-//           key={i}
-//           className="calendar-cell"
-//           title={`${d.data} - ${d.percentualUptime.toFixed(2)}%`}
-//           style={{ backgroundColor: getColor(d.percentualUptime) }}
-//         />
-//       ))}
-//     </div>
-//   );
-// };
-
-// const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-
-// const FalhasHeatmap = ({ data }) => {
-//   if (isEmpty(data)) return <div className="empty-chart">Sem dados</div>;
-
-//   const max = Math.max(...data.map(d => d.contagemFalhas), 1);
-//   const grid = Array.from({ length: 7 }, (_, dia) =>
-//     Array.from({ length: 24 }, (_, hora) =>
-//       data.find(d => d.diaSemana === dia && d.hora === hora)?.contagemFalhas || 0
-//     )
-//   );
-
-//   const getColor = (value) => {
-//     const intensity = Math.floor((value / max) * 255);
-//     return `rgb(200, ${255 - intensity}, ${255 - intensity})`;
-//   };
-
-//   return (
-//     <div className="heatmap-container">
-//       <div className="heatmap-days">
-//         {diasSemana.map((d, i) => (
-//           <div key={i} className="heatmap-day-label">{d}</div>
-//         ))}
-//       </div>
-//       <div className="heatmap-grid">
-//         {grid.map((coluna, dia) =>
-//           coluna.map((valor, hora) => (
-//             <div
-//               key={`${dia}-${hora}`}
-//               className="heatmap-cell"
-//               title={`${diasSemana[dia]} ${hora}h: ${valor} falhas`}
-//               style={{ backgroundColor: getColor(valor) }}
-//             />
-//           ))
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
 const safeHostname = (url) => {
   try { return new URL(url).hostname; } catch { return url; }
 };
@@ -148,26 +84,41 @@ const Uptime24hBars = ({ data }) => {
 
 
 const Sparkline = ({ data, color = "#45ac26" }) => {
-  const safeData = safeArray(data);
+  const safeData = safeArray(data).map(item => ({
+    ...item,
+    timestamp: new Date(Date.parse(item.dataHora + "Z")).getTime(),
+    latencia: item.latency ?? item.latencia ?? item.latencia ?? 0
+  }));
 
   if (isEmpty(safeData))
     return <div className="empty-chart">Sem dados suficientes</div>;
+
+  safeData.sort((a, b) => a.timestamp - b.timestamp);
 
   return (
     <div style={{ width: "100%", height: 60, marginTop: 6 }}>
       <ResponsiveContainer>
         <LineChart data={safeData}>
+          <XAxis
+            dataKey="timestamp"
+            type="number"
+            hide={true}
+            domain={["dataMin", "dataMax"]}
+          />
+
           <Line
             type="monotone"
             dataKey="latencia"
             stroke={color}
             strokeWidth={2}
             dot={false}
+            isAnimationActive={false}
           />
+
           <Tooltip
             formatter={(value) => [`${value} ms`, "Latência"]}
-            labelFormatter={(l) =>
-              new Date(l).toLocaleString("pt-BR", {
+            labelFormatter={(ts) =>
+              new Date(ts).toLocaleString("pt-BR", {
                 hour: "2-digit",
                 minute: "2-digit",
                 second: "2-digit"
@@ -179,6 +130,7 @@ const Sparkline = ({ data, color = "#45ac26" }) => {
     </div>
   );
 };
+
 
 const GraficoFalhasPorHora = ({ data }) => {
   if (isEmpty(data))
@@ -200,31 +152,20 @@ const GraficoFalhasPorHora = ({ data }) => {
 const Painel = () => {
   const { user } = useContext(AuthContext);
   const token = user?.token;
-  const email = user?.email;
   const navigate = useNavigate();
-
-  const [customer, setCustomer] = useState(null);
+  const customer = user;
   const [servicos, setServicos] = useState([]);
   const [servicoSelecionado, setServicoSelecionado] = useState('');
-
-  const [periodo, setPeriodo] = useState(7);
-
-  // const [pingServiceNumberByHour, setPingServiceNumberByHour] = useState([]);
-  // const [pingFailureDistribution, setPingFailureDistribution] = useState([]);
-  // const [pingFailuresPercentage, setPingFailuresPercentage] = useState([]);
+  const [periodo, setPeriodo] = useState(1);
   const [totalPingsByService, setTotalPingsByService] = useState([]);
   const [TotalPingsFalhosByService, setTotalPingsFalhosByService] = useState([]);
-  // const [uptimeDiario, setUptimeDiario] = useState([]);
-  // const [proporcaoUptimeDowntime, setProporcaoUptimeDowntime] = useState([]);
-  // const [padraoFalhasHeatmap, setPadraoFalhasHeatmap] = useState([]);
-  const [uptime, setUptime] = useState('');
   const [statusServico, setStatusServico] = useState(true);
   const [loading, setLoading] = useState(true);
   const [ultimoRegistroRelativo, setUltimoRegistroRelativo] = useState("...");
   const [uptime24h, setUptime24h] = useState([]);
   const [incidents, setIncidents] = useState([]);
   const [responseTime, setResponseTime] = useState([]);
-  const [incidentCount, setIncidentCount] = useState(0);
+  const [falhas24h, setFalhas24h] = useState(0);
   const [failureReasons, setFailureReasons] = useState([]);
   const [falhasPorHora, setFalhasPorHora] = useState([]);
 
@@ -242,31 +183,6 @@ const Painel = () => {
     if (diff < 3600) return `${Math.floor(diff / 60)} minutos atrás`;
     return `${Math.floor(diff / 3600)} horas atrás`;
   }, []);
-
-  const calcularUptime = useCallback((date) => {
-    if (!date) return "Sem dados";
-
-    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
-    const dias = Math.floor(diff / 86400);
-    const horas = Math.floor((diff % 86400) / 3600);
-    const minutos = Math.floor((diff % 3600) / 60);
-
-    return `${dias}d, ${horas}h, ${minutos}m`;
-  }, []);
-
-  const fetchCustomer = useCallback(async () => {
-    if (!email || !token) return;
-
-    try {
-      const res = await fetch(
-        `${API_BASE}/api/Cliente/email/${encodeURIComponent(email)}`,
-        { headers: authHeaders }
-      );
-      if (res.ok) setCustomer(await res.json());
-    } catch {
-      // silencioso
-    }
-  }, [email, token, authHeaders]);
 
   const fetchServicos = useCallback(async (clienteId) => {
     if (!clienteId || !token) {
@@ -286,9 +202,10 @@ const Painel = () => {
   }, [token, authHeaders]);
 
   const basePainelUrl = useMemo(() => {
-    if (!customer?.id) return null;
-    return `${API_BASE}/api/clientes/${customer.id}/painel`;
-  }, [customer]);
+    if (!user?.id) return null;
+    return `${API_BASE}/api/clientes/${user.id}/painel`;
+  }, [user]);
+
 
   const buildQuery = useCallback(() => {
     const params = new URLSearchParams();
@@ -298,17 +215,16 @@ const Painel = () => {
     return qs ? `?${qs}` : '';
   }, [servicoSelecionado, periodo]);
 
-    useEffect(() => {
-  if (!uptime24h || uptime24h.length === 0) {
-    setIncidentCount(0);
-    return;
-  }
+  useEffect(() => {
+    if (!uptime24h || uptime24h.length === 0) {
+      setFalhas24h(0);
+      return;
+    }
 
-  const totalFalhas = uptime24h.reduce((acc, item) =>
-    acc + (item.quantidadeFalha ?? 0), 0);
+    const total = uptime24h.reduce((acc, h) => acc + (h.quantidadeFalha ?? 0), 0);
+    setFalhas24h(total);
+  }, [uptime24h]);
 
-  setIncidentCount(totalFalhas);
-}, [uptime24h]);
 
 
   useEffect(() => {
@@ -341,65 +257,57 @@ const Painel = () => {
     [basePainelUrl, token, servicoSelecionado, periodo, authHeaders]
   );
 
-const fetchUltimoRegistro = useCallback(async () => {
-  if (!basePainelUrl || !token) {
-    setUltimoRegistroRelativo("Sem dados");
-    setUptime("Sem dados");
-    setStatusServico(false);
-    return;
-  }
-
-  try {
-    const query = servicoSelecionado ? `?servicoId=${servicoSelecionado}` : '';
-    const url = `${basePainelUrl}/ultimo-ping${query}`;
-
-    const res = await fetch(url, { headers: authHeaders });
-    const data = res.ok ? await res.json() : null;
-
-    if (!data) {
+  const fetchUltimoRegistro = useCallback(async () => {
+    if (!basePainelUrl || !token) {
       setUltimoRegistroRelativo("Sem dados");
-      setUptime("Sem dados");
       setStatusServico(false);
       return;
     }
 
-    const dt = new Date(Date.parse(data.horaPing + "Z"));
-    const rel = formatTempoRelativo(dt);
-    const up = calcularUptime(dt);
+    try {
+      const query = servicoSelecionado ? `?servicoId=${servicoSelecionado}` : '';
+      const url = `${basePainelUrl}/ultimo-ping${query}`;
 
-    const statusTexto = data.observacao?.toLowerCase();
-    let isUp = false;
+      const res = await fetch(url, { headers: authHeaders });
+      const data = res.ok ? await res.json() : null;
 
-    if (statusTexto?.includes("sucesso") || statusTexto?.includes("ok")) {
-      isUp = true;
-    } else if (statusTexto?.includes("falha")) {
-      isUp = false;
-    } else {
-      isUp = false;
+      if (!data) {
+        setUltimoRegistroRelativo("Sem dados");
+        setStatusServico(false);
+        return;
+      }
+
+      const dt = new Date(Date.parse(data.horaPing + "Z"));
+      const rel = formatTempoRelativo(dt);
+
+      const statusTexto = data.observacao?.toLowerCase();
+      let isUp = false;
+
+      if (statusTexto?.includes("sucesso") || statusTexto?.includes("ok")) {
+        isUp = true;
+      } else if (statusTexto?.includes("falha")) {
+        isUp = false;
+      } else {
+        isUp = false;
+      }
+
+      setUltimoRegistroRelativo(rel);
+      setStatusServico(isUp ? "UP" : "DOWN");
+    } catch {
+      setUltimoRegistroRelativo("Erro");
+      setStatusServico("DOWN");
     }
-
-    setUltimoRegistroRelativo(rel);
-    setUptime(up);
-    setStatusServico(isUp ? "UP" : "DOWN");
-  } catch {
-    setUltimoRegistroRelativo("Erro");
-    setStatusServico("DOWN");
-  }
-}, [
-  basePainelUrl,
-  token,
-  servicoSelecionado,
-  formatTempoRelativo,
-  calcularUptime,
-  authHeaders
-]);
+  }, [
+    basePainelUrl,
+    token,
+    servicoSelecionado,
+    formatTempoRelativo,
+    authHeaders
+  ]);
 
 
   const fetchHealthHistory = useCallback(async () => {
-    if (!basePainelUrl || !token) {
-      setStatusServico("DOWN");
-      return;
-    }
+    if (!basePainelUrl || !token) return;
 
     try {
       const query = servicoSelecionado ? `?servicoId=${servicoSelecionado}` : "";
@@ -408,22 +316,56 @@ const fetchUltimoRegistro = useCallback(async () => {
       const res = await fetch(url, { headers: authHeaders });
       const history = res.ok ? await res.json() : [];
 
-      if (isEmpty(history)) { setStatusServico("DOWN"); return; }
+      if (isEmpty(history)) return;
 
-      const successes = history.filter(h =>
-        h.observacao?.toLowerCase().includes("sucesso")
-      ).length;
+      const sorted = [...history].sort(
+        (a, b) =>
+          new Date(Date.parse(a.horaPing + "Z")) -
+          new Date(Date.parse(b.horaPing + "Z"))
+      );
 
-      const successRate = successes / history.length;
+      const ultimoDownIndex = sorted.findLastIndex(h => {
+        const o = h.observacao?.toLowerCase() ?? "";
+        return (
+          o.includes("falha") ||
+          o.includes("erro") ||
+          o.includes("timeout") ||
+          o.includes("bad") ||
+          o.includes("fail")
+        );
+      });
 
-      if (successRate === 1) setStatusServico("UP");
-      else if (successRate > 0) setStatusServico("INSTAVEL");
-      else setStatusServico("DOWN");
+      let inicioEvento;
 
-    } catch {
-      setStatusServico("DOWN");
-    }
-  }, [basePainelUrl, token, servicoSelecionado, authHeaders]);
+      if (ultimoDownIndex === -1) {
+        inicioEvento = new Date(Date.parse(sorted[0].horaPing + "Z"));
+        setStatusServico("UP");
+      } else {
+        const proximo = sorted[ultimoDownIndex + 1];
+
+        if (!proximo) {
+          inicioEvento = new Date(Date.parse(sorted[ultimoDownIndex].horaPing + "Z"));
+          setStatusServico("DOWN");
+        } else {
+          inicioEvento = new Date(Date.parse(proximo.horaPing + "Z"));
+          setStatusServico("UP");
+        }
+      }
+
+      const agora = new Date();
+      if (inicioEvento > agora) inicioEvento = agora;
+
+    } catch { }
+  }, [
+    basePainelUrl,
+    token,
+    servicoSelecionado,
+    authHeaders
+  ]);
+
+
+
+
 
   const fetchUptime24h = useCallback(async () => {
     if (!basePainelUrl || !token) {
@@ -445,7 +387,6 @@ const fetchUltimoRegistro = useCallback(async () => {
   const fetchIncidentes = useCallback(async () => {
     if (!basePainelUrl || !token) {
       setIncidents([]);
-      setIncidentCount(0);
       return;
     }
 
@@ -457,7 +398,6 @@ const fetchUltimoRegistro = useCallback(async () => {
 
       if (!res.ok || res.status === 204) {
         setIncidents([]);
-        setIncidentCount(0);
         return;
       }
 
@@ -465,12 +405,11 @@ const fetchUltimoRegistro = useCallback(async () => {
       const lista = Array.isArray(data) ? data : [];
 
       setIncidents(lista);
-      setIncidentCount(lista.length);
     } catch {
       setIncidents([]);
-      setIncidentCount(0);
     }
   }, [basePainelUrl, token, buildQuery, authHeaders]);
+
 
   const fetchResponseTime = useCallback(async () => {
     if (!basePainelUrl || !token) {
@@ -524,7 +463,6 @@ const fetchUltimoRegistro = useCallback(async () => {
     }
   }, [basePainelUrl, token, buildQuery, authHeaders]);
 
-  // valores de resposta de tempo (memo pra não recalcular toda hora)
   const valoresLatencia = useMemo(
     () => responseTime.map(r => r.latency ?? r.latencia ?? 0),
     [responseTime]
@@ -558,16 +496,10 @@ const fetchUltimoRegistro = useCallback(async () => {
   }, [user, navigate]);
 
   useEffect(() => {
-    if (email && token) {
-      fetchCustomer();
+    if (user?.id) {
+      fetchServicos(user.id);
     }
-  }, [email, token, fetchCustomer]);
-
-  useEffect(() => {
-    if (customer?.id) {
-      fetchServicos(customer.id);
-    }
-  }, [customer, fetchServicos]);
+  }, [user?.id, fetchServicos]);
 
   useEffect(() => {
     if (!basePainelUrl || !token) return;
@@ -578,24 +510,25 @@ const fetchUltimoRegistro = useCallback(async () => {
       setLoading(true);
 
       try {
-        await Promise.all([
-          // fetchData('pings-por-hora', setPingServiceNumberByHour),
-          // fetchData('distribuicao-falhas', setPingFailureDistribution),
-          // fetchData('percentual-falhas', setPingFailuresPercentage),
+        const promessas = [
           fetchData('total-pings-por-servico', setTotalPingsByService),
           fetchData('total-falhas-por-servico', setTotalPingsFalhosByService),
-          // fetchData('uptime-diario', setUptimeDiario),
-          // fetchData('proporcao-uptime-downtime', setProporcaoUptimeDowntime),
-          // fetchData('padrao-falhas', setPadraoFalhasHeatmap),
-
-          fetchUltimoRegistro(),
-          fetchHealthHistory(),
           fetchUptime24h(),
-          fetchIncidentes(),
-          fetchResponseTime(),
-          fetchFailureReasons(),
-          fetchFalhasPorHora()
-        ]);
+          fetchIncidentes()
+        ];
+
+        if (servicoSelecionado) {
+          promessas.push(
+            fetchUltimoRegistro(),
+            fetchHealthHistory(),
+            fetchResponseTime(),
+            fetchFailureReasons(),
+            fetchFalhasPorHora()
+          );
+        }
+
+        await Promise.all(promessas);
+
       } finally {
         if (!cancelado) {
           setLoading(false);
@@ -605,12 +538,13 @@ const fetchUltimoRegistro = useCallback(async () => {
 
     load();
 
-    return () => { cancelado = true; };
+    return () => {
+      cancelado = true;
+    };
   }, [
     basePainelUrl,
     token,
     servicoSelecionado,
-    // periodo,
     fetchData,
     fetchUltimoRegistro,
     fetchHealthHistory,
@@ -701,13 +635,9 @@ const fetchUltimoRegistro = useCallback(async () => {
                   </span>
                 </div>
               }
-              description={
-                statusServico === "UP"
-                  ? `Online há ${uptime}`
-                  : statusServico === "INSTAVEL"
-                    ? `Oscilando — Último registro: ${ultimoRegistroRelativo}`
-                    : `Offline desde ${ultimoRegistroRelativo}`
-              }
+              description="Baseado nas verificações mais recentes"
+
+
             />
 
             <Uptime24hBars data={uptime24h} />
@@ -715,10 +645,11 @@ const fetchUltimoRegistro = useCallback(async () => {
         )}
 
         <StatCard
-          title="Incidentes (24h)"
-          value={incidentCount}
+          title="Falhas nas últimas 24h"
+          value={falhas24h}
           description={modoGeral ? "Todos os serviços" : "Este serviço"}
         />
+
       </div>
 
       <div className="main-grid">
@@ -729,7 +660,7 @@ const fetchUltimoRegistro = useCallback(async () => {
               <h3>Falhas por Serviço</h3>
 
               {isEmpty(TotalPingsFalhosByService) ? (
-                <div className="empty-incidents">Sem falhas registradas 🎉</div>
+                <div className="empty-incidents">Sem falhas registradas</div>
               ) : (
                 <>
                   <div className="failure-header">
@@ -826,19 +757,40 @@ const fetchUltimoRegistro = useCallback(async () => {
                 const host = safeHostname(i.enderecoUrl);
                 return (
                   <div className="incident-row" key={i.id}>
-                    <div className="incident-col status">
-                      {i.ativo ? (
-                        <span className="incident-col service">OK {i.codigoStatus}</span>
-                      ) : (
-                        <span className="incident-col service">Falha {i.codigoStatus}</span>
-                      )}
+                    <div className="incident-col incident-status">
+                      <span className="incident-label">Status</span>
+                      <span className="incident-value">
+                        {i.ativo ? `OK ${i.codigoStatus}` : `Falha ${i.codigoStatus}`}
+                      </span>
                     </div>
-                    <div className="incident-col service">{host}</div>
-                    <div className="incident-col service">{i.codigoStatus || i.descricaoStatus || "—"}</div>
-                    <div className="incident-col date">{new Date(i.inicio).toLocaleDateString()}</div>
-                    <div className="incident-col hour">
-                      {new Date(i.inicio).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+
+                    <div className="incident-col incident-service">
+                      <span className="incident-label">Serviço</span>
+                      <span className="incident-value">{host}</span>
                     </div>
+
+                    <div className="incident-col incident-error">
+                      <span className="incident-label">Erro</span>
+                      <span className="incident-value">{i.codigoStatus || i.descricaoStatus || "—"}</span>
+                    </div>
+
+                    <div className="incident-col incident-date">
+                      <span className="incident-label">Data</span>
+                      <span className="incident-value">
+                        {new Date(Date.parse(i.inicio + "Z")).toLocaleDateString("pt-BR")}
+                      </span>
+                    </div>
+
+                    <div className="incident-col incident-hour">
+                      <span className="incident-label">Hora</span>
+                      <span className="incident-value">
+                        {new Date(Date.parse(i.inicio + "Z")).toLocaleTimeString("pt-BR", {
+                          hour: "2-digit",
+                          minute: "2-digit"
+                        })}
+                      </span>
+                    </div>
+
                   </div>
                 );
               })

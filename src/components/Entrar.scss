@@ -23,7 +23,7 @@ $dark-color: #343a40;
     background: #fff;
     position: relative;
     overflow: hidden;
-    text-align: center; 
+    text-align: center;
 
     .login-logo {
       width: 180px;
@@ -50,11 +50,6 @@ $dark-color: #343a40;
       animation: float 4s ease-in-out infinite;
       margin-top: 2rem;
     }
-
-    // @keyframes float {
-    //   0%, 100% { transform: translateY(0); }
-    //   50% { transform: translateY(-10px); }
-    // }
   }
 
   .login-right {
@@ -182,33 +177,62 @@ $dark-color: #343a40;
     }
   }
 
-  @media (max-width: 900px) {
-    flex-direction: column;
+  @media (max-width: 700px) {
 
     .login-left {
-      text-align: center;
-      align-items: center;
-      padding: 2rem;
+      display: none !important;
     }
 
     .login-right {
-      padding: 2rem;
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.2rem;
+
+      .form-card {
+        width: 100%;
+        max-width: 420px;
+        padding: 1.5rem;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+
+    .form-card h2 {
+      font-size: 1.6rem !important;
+    }
+
+    input {
+      font-size: 1rem !important;
+      padding: 0.8rem !important;
+    }
+
+    .password-container input {
+      padding-right: 2.2rem !important;
+    }
+
+    button {
+      padding: 0.9rem !important;
+      font-size: 1rem !important;
     }
   }
+
 }
 
-
-input[type="password"]::-ms-reveal,
-input[type="password"]::-ms-clear {
-  display: none;
+.pass-hidden {
+  -webkit-text-security: disc !important;
 }
 
-input[type="password"]::-webkit-credentials-auto-fill-button,
-input[type="password"]::-webkit-textfield-decoration-container,
-input[type="password"]::-webkit-password-toggle {
-  display: none !important;
+.pass-visible {
+  -webkit-text-security: none !important;
 }
 
-input[type="password"] {
-  -webkit-text-security: disc !important; /* mantém estilo de senha */
+.password-container input {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  height: 48px !important;
+  line-height: 48px !important;
+  padding-right: 2.7rem !important;
 }

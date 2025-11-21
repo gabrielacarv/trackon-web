@@ -4,9 +4,6 @@ $tertiary-color: #FF7D2D;
 $light-color: #f8f9fa;
 $dark-color: #343a40;
 
-/* ===========================
-   HERO SECTION
-   =========================== */
 .hero {
   min-height: 100vh;
   display: flex;
@@ -90,7 +87,6 @@ $dark-color: #343a40;
     align-items: center;
     position: relative;
 
-    /* 🚫 Some fora do desktop */
     @media (max-width: 1024px) {
       display: none !important;
     }
@@ -99,13 +95,13 @@ $dark-color: #343a40;
       max-width: 1000px;
       height: auto;
       border-radius: 15px;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
       transform: perspective(1200px) rotateY(-6deg) rotateX(2deg);
-      border: 1px solid rgba(0,0,0,0.08);
+      border: 1px solid rgba(0, 0, 0, 0.08);
       transition: all .4s ease;
 
       &:hover {
-        box-shadow: 0 35px 70px rgba(0,0,0,0.25);
+        box-shadow: 0 35px 70px rgba(0, 0, 0, 0.25);
       }
 
       @media (max-width: 1400px) {
@@ -118,7 +114,7 @@ $dark-color: #343a40;
       position: absolute;
       width: 90%;
       height: 90%;
-      background: rgba(69,172,38,0.12);
+      background: rgba(69, 172, 38, 0.12);
       filter: blur(120px);
       z-index: -1;
       border-radius: 50%;
@@ -127,9 +123,6 @@ $dark-color: #343a40;
 }
 
 
-/* ===========================
-   FEATURES
-   =========================== */
 .features {
   background: #f8f9fa;
   padding: 5rem 2rem;
@@ -160,12 +153,12 @@ $dark-color: #343a40;
     background: #fff;
     border-radius: 1rem;
     padding: 2rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
 
     &:hover {
       transform: translateY(-5px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
     }
 
     .icon {
@@ -188,10 +181,6 @@ $dark-color: #343a40;
   }
 }
 
-
-/* ===========================
-   FOOTER
-   =========================== */
 .footer {
   background: linear-gradient(180deg, #1b375b 0%, #10223d 100%);
   color: #fff;

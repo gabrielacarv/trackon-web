@@ -6,16 +6,13 @@ $dark-color: #343a40;
 $light-bg-start: #f8f9fa;
 $light-bg-end: #ececec;
 $card-bg: #ffffff;
-$primary-text-color: #1b375b; 
-$secondary-text-color: #555;   
+$primary-text-color: #1b375b;
+$secondary-text-color: #555;
 $accent-color-green: #45ac26;
-$border-color: #dee2e6; 
-
-
+$border-color: #dee2e6;
 
 .gerenciar-servico {
 
-  // Cabeçalho da tabela
   .header {
     display: grid;
     grid-template-columns: 2fr 1fr 80px;
@@ -24,7 +21,6 @@ $border-color: #dee2e6;
     color: $primary-text-color;
   }
 
-  // Inputs e Selects
   input,
   select {
     padding: 0.7rem;
@@ -41,7 +37,6 @@ $border-color: #dee2e6;
     }
   }
 
-  // Botão de adicionar
   .add-service-button {
     background: $primary-text-color;
     color: #fff;
@@ -63,7 +58,6 @@ $border-color: #dee2e6;
     }
   }
 
-  // Box de serviços pendentes
   h3 {
     margin-bottom: 10px;
     color: $primary-text-color;
@@ -84,7 +78,6 @@ $border-color: #dee2e6;
     }
   }
 
-  // Botões de ação (editar / trash)
   .icon-button {
     background: none;
     border: none;
@@ -109,7 +102,6 @@ $border-color: #dee2e6;
     }
   }
 
-  // Rodapé de botões
   .save-button,
   .back-button {
     padding: 0.8rem 2rem;

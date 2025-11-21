@@ -9,7 +9,6 @@ $dark-color: #343a40;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  // background: linear-gradient(135deg, #f8f9fa 0%, #ececec 100%); 
   background: #fff;
   padding: 2rem;
   text-align: center;
@@ -66,6 +65,8 @@ $dark-color: #343a40;
   }
 
   @media (max-width: 768px) {
+    padding: 1.5rem;
+
     .not-found-content {
       padding: 2rem 1.5rem;
 
@@ -84,6 +85,32 @@ $dark-color: #343a40;
       .back-btn {
         font-size: 1rem;
         padding: 0.6rem 1.5rem;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 1rem;
+
+    .not-found-content {
+      padding: 1.5rem 1rem;
+
+      h1 {
+        font-size: 3rem;
+      }
+
+      h2 {
+        font-size: 1.3rem;
+      }
+
+      p {
+        font-size: 0.95rem;
+      }
+
+      .back-btn {
+        width: 100%;
+        padding: 0.7rem;
+        font-size: 1rem;
       }
     }
   }

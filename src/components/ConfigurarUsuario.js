@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import './ConfigurarUsuario.scss';
@@ -6,8 +6,12 @@ import { Save, ArrowLeft, Edit, X } from 'lucide-react';
 
 const ConfigurarUsuario = () => {
   const { user } = useContext(AuthContext);
-  const [clienteId, setClienteId] = useState(null);
-  const [dadosCliente, setDadosCliente] = useState({ nome: '', email: '' });
+
+  const [clienteId] = useState(user?.id ?? null);
+  const [dadosCliente, setDadosCliente] = useState({
+    nome: user?.nome ?? "",
+    email: user?.email ?? ""
+  });
 
   const [senhaAtual, setSenhaAtual] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
@@ -18,39 +22,22 @@ const ConfigurarUsuario = () => {
 
   const [loading, setLoading] = useState(false);
   const [erros, setErros] = useState({});
-  const navigate = useNavigate();
-
   const [toast, setToast] = useState({ msg: "", type: "" });
+
+  const navigate = useNavigate();
 
   const showToast = (msg, type) => {
     setToast({ msg, type });
     setTimeout(() => setToast({ msg: "", type: "" }), 5000);
   };
 
-  useEffect(() => {
-    const fetchCliente = async () => {
-      try {
-        const response = await fetch(`https://trackon.app.br/api/Cliente/email/${user.email}`, {
-          headers: { 'Authorization': `Bearer ${user.token}` },
-        });
-
-        if (response.ok) {
-          const cliente = await response.json();
-          setClienteId(cliente.id);
-          setDadosCliente({ nome: cliente.nome, email: cliente.email });
-        }
-      } catch (err) {
-        console.error('Erro ao carregar cliente', err);
-      }
-    };
-    fetchCliente();
-  }, [user]);
-
   const validarDados = () => {
     const novosErros = {};
     if (!dadosCliente.nome.trim()) novosErros.nome = 'Informe o nome.';
     if (!dadosCliente.email.trim()) novosErros.email = 'Informe o e-mail.';
-    else if (!/\S+@\S+\.\S+/.test(dadosCliente.email)) novosErros.email = 'E-mail inválido.';
+    else if (!/\S+@\S+\.\S+/.test(dadosCliente.email))
+      novosErros.email = 'E-mail inválido.';
+
     setErros(novosErros);
     return Object.keys(novosErros).length === 0;
   };
@@ -61,6 +48,7 @@ const ConfigurarUsuario = () => {
 
     if (!regex.test(novaSenha))
       novosErros.novaSenha = 'Deve ter 8 caracteres, 1 maiúscula, 1 número e 1 símbolo.';
+
     if (novaSenha !== confirmarSenha)
       novosErros.confirmarSenha = 'Senhas não coincidem.';
 
@@ -75,16 +63,31 @@ const ConfigurarUsuario = () => {
     try {
       const resp = await fetch(`https://trackon.app.br/api/Cliente/${clienteId}`, {
         method: 'PUT',
-        headers: { 'Authorization': `Bearer ${user.token}`, 'Content-Type': 'application/json' },
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify(dadosCliente)
       });
 
       if (resp.ok) {
-        showToast("Informações atualizadas ✅", "success");
+        const updatedUser = {
+          ...user,
+          nome: dadosCliente.nome,
+          email: dadosCliente.email
+        };
+
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+
+        showToast("Informações atualizadas", "success");
         setEditandoInfo(false);
         setErros({});
-      } else showToast("Erro ao atualizar ❌", "error");
-    } finally { setLoading(false); }
+      } else {
+        showToast("Erro ao atualizar", "error");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const salvarSenha = async () => {
@@ -94,30 +97,32 @@ const ConfigurarUsuario = () => {
     try {
       const resp = await fetch(`https://trackon.app.br/api/Cliente/${clienteId}/senha`, {
         method: 'PUT',
-        headers: { 'Authorization': `Bearer ${user.token}`, 'Content-Type': 'application/json' },
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({ senhaAtual, novaSenha })
       });
 
       if (resp.ok) {
-        showToast("Senha alterada com sucesso 🔐", "success");
+        showToast("Senha alterada com sucesso", "success");
         setEditandoSenha(false);
         setSenhaAtual('');
         setNovaSenha('');
         setConfirmarSenha('');
         setErros({});
-      } else showToast("Erro ao alterar senha ❌", "error");
-    } finally { setLoading(false); }
+      } else {
+        showToast("Erro ao alterar senha", "error");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="config-user">
-      {/* Toast */}
-      {toast.msg && <div className={`toast ${toast.type}`}>{toast.msg}</div>}
 
-      {/* <div className="panel-header">
-        <h2>Configurações da Conta</h2>
-        <p>Gerencie seus dados e segurança da conta</p>
-      </div> */}
+      {toast.msg && <div className={`toast ${toast.type}`}>{toast.msg}</div>}
 
       <header className="dashboard-header">
         <div className="header-left">
@@ -126,7 +131,6 @@ const ConfigurarUsuario = () => {
         </div>
       </header>
 
-      {/* Informações Pessoais */}
       <div className="card-section">
         <div className="card-header">
           <h3>Informações pessoais</h3>
@@ -160,23 +164,16 @@ const ConfigurarUsuario = () => {
         {editandoInfo && (
           <div className="actions">
             <button className="btn-save" onClick={salvarInfo} disabled={loading}>
-              {loading ? (
-                <>
-                  <Save size={18} /> Salvando...
-                </>
-              ) : (
-                <>
-                  <Save size={18} /> Salvar
-                </>
-              )}
+              {loading ? <><Save size={18} /> Salvando...</> : <><Save size={18} /> Salvar</>}
             </button>
 
-            <button className="btn-cancel" onClick={() => setEditandoInfo(false)} disabled={loading}><X size={18} /> Cancelar</button>
+            <button className="btn-cancel" onClick={() => setEditandoInfo(false)} disabled={loading}>
+              <X size={18} /> Cancelar
+            </button>
           </div>
         )}
       </div>
 
-      {/* Senha */}
       <div className="card-section">
         <div className="card-header">
           <h3>Segurança</h3>
@@ -194,11 +191,21 @@ const ConfigurarUsuario = () => {
               <input type="password" value={senhaAtual} onChange={(e) => setSenhaAtual(e.target.value)} />
 
               <label>Nova senha</label>
-              <input type="password" value={novaSenha} onChange={(e) => setNovaSenha(e.target.value)} className={erros.novaSenha ? 'input-error' : ''} />
+              <input
+                type="password"
+                value={novaSenha}
+                onChange={(e) => setNovaSenha(e.target.value)}
+                className={erros.novaSenha ? 'input-error' : ''}
+              />
               {erros.novaSenha && <span className="error">{erros.novaSenha}</span>}
 
               <label>Confirmar nova senha</label>
-              <input type="password" value={confirmarSenha} onChange={(e) => setConfirmarSenha(e.target.value)} className={erros.confirmarSenha ? 'input-error' : ''} />
+              <input
+                type="password"
+                value={confirmarSenha}
+                onChange={(e) => setConfirmarSenha(e.target.value)}
+                className={erros.confirmarSenha ? 'input-error' : ''}
+              />
               {erros.confirmarSenha && <span className="error">{erros.confirmarSenha}</span>}
             </>
           )}
@@ -206,8 +213,13 @@ const ConfigurarUsuario = () => {
 
         {editandoSenha && (
           <div className="actions">
-            <button className="btn-save" onClick={salvarSenha}><Save size={18} /> Salvar</button>
-            <button className="btn-cancel" onClick={() => setEditandoSenha(false)}><X size={18} /> Cancelar</button>
+            <button className="btn-save" onClick={salvarSenha}>
+              <Save size={18} /> Salvar
+            </button>
+
+            <button className="btn-cancel" onClick={() => setEditandoSenha(false)}>
+              <X size={18} /> Cancelar
+            </button>
           </div>
         )}
       </div>

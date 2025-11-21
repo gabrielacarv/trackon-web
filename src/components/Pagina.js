@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-// import { GoRocket } from "react-icons/go";
 import { FaServer, FaChartLine, FaDatabase, FaCogs, FaClock, FaDesktop } from "react-icons/fa";
 import './Pagina.scss';
 import logo from '../assets/images/logo.png';
@@ -42,7 +41,6 @@ const Pagina = () => {
 
   return (
     <div className="landing-page">
-      {/* Seção Hero */}
       <section className="hero">
         <div className="hero-content">
           <div className="hero-text">
@@ -53,7 +51,6 @@ const Pagina = () => {
           </div>
 
           <div className="hero-illustration">
-            {/* Exemplo: SVG ilustrativo ou imagem abstrata */}
             <img
               src={painel}
               alt="Ilustração de monitoramento"
@@ -62,7 +59,6 @@ const Pagina = () => {
         </div>
       </section>
 
-      {/* Seção Features */}
       <section className="features">
         <h2>Recursos que impulsionam seu negócio</h2>
         <div className="features-grid">
@@ -78,34 +74,31 @@ const Pagina = () => {
         </div>
       </section>
 
-            {/* Seção Footer */}
-<footer className="footer">
-  <div className="footer-content">
-    <div className="footer-left">
-      <h2 className="footer-title">TrackOn</h2>
+      <footer className="footer">
+        <div className="footer-content">
+          <div className="footer-left">
+            <h2 className="footer-title">TrackOn</h2>
             <p>
-        Monitore seus sites com confiança. O TrackOn mantém você sempre
-        informado, com alertas em tempo real e dados claros para decisões melhores.
-      </p>
-    </div>
-
-    
-    <div className="footer-contact">
-      <h4>Entre em contato</h4>
-      <ul>
-        <li>suporte@trackon.com.br</li>
-        <li>(34) 99999-0000</li>
-        <li>Araxá - MG</li>
-      </ul>
-    </div>
-  </div>
-
-  <div className="footer-bottom">
-    <p>© {new Date().getFullYear()} TrackOn | Monitoramento inteligente para todos.</p>
-  </div>
-</footer>
+              Monitore seus sites com confiança. O TrackOn mantém você sempre
+              informado, com alertas em tempo real e dados claros para decisões melhores.
+            </p>
+          </div>
 
 
+          <div className="footer-contact">
+            <h4>Entre em contato</h4>
+            <ul>
+              <li>suporte@trackon.com.br</li>
+              <li>(34) 99999-0000</li>
+              <li>Araxá - MG</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="footer-bottom">
+          <p>© {new Date().getFullYear()} TrackOn | Monitoramento inteligente para todos.</p>
+        </div>
+      </footer>
 
     </div>
   );

@@ -22,7 +22,7 @@ $dark-color: #343a40;
     background: #fff;
     position: relative;
     overflow: hidden;
-    text-align: center; 
+    text-align: center;
 
     .cadastro-logo {
       width: 180px;
@@ -49,11 +49,6 @@ $dark-color: #343a40;
       animation: float 4s ease-in-out infinite;
       margin-top: 2rem;
     }
-
-    // @keyframes float {
-    //   0%, 100% { transform: translateY(0px); }
-    //   50% { transform: translateY(-10px); }
-    // }
   }
 
   .cadastro-right {
@@ -140,11 +135,30 @@ $dark-color: #343a40;
             transition: all 0.4s ease;
           }
 
-          .strength-0 { width: 20%; background: #e63946; }
-          .strength-1 { width: 40%; background: #f78c6b; }
-          .strength-2 { width: 60%; background: #fbc02d; }
-          .strength-3 { width: 80%; background: #66bb6a; }
-          .strength-4 { width: 100%; background: #45ac26; }
+          .strength-0 {
+            width: 20%;
+            background: #e63946;
+          }
+
+          .strength-1 {
+            width: 40%;
+            background: #f78c6b;
+          }
+
+          .strength-2 {
+            width: 60%;
+            background: #fbc02d;
+          }
+
+          .strength-3 {
+            width: 80%;
+            background: #66bb6a;
+          }
+
+          .strength-4 {
+            width: 100%;
+            background: #45ac26;
+          }
 
           span {
             font-size: 0.85rem;
@@ -217,29 +231,115 @@ $dark-color: #343a40;
     flex-direction: column;
 
     .cadastro-left {
-      text-align: center;
-      align-items: center;
-      padding: 2rem;
+      order: 2;
+      padding: 1.5rem;
+      padding-top: 0;
+
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      p {
+        font-size: 1rem;
+        max-width: 300px;
+      }
+
+      .cadastro-illustration {
+        max-width: 280px;
+        margin-top: 1.5rem;
+      }
     }
 
     .cadastro-right {
-      padding: 2rem;
+      order: 1;
+      width: 100%;
+      padding: 1rem;
+
+      .form-card {
+        max-width: 100%;
+        padding: 1.8rem;
+      }
     }
   }
+
+  @media (max-width: 700px) {
+
+    .cadastro-left h1,
+    .cadastro-left p,
+    .cadastro-left .cadastro-illustration {
+      display: none !important;
+    }
+
+    .cadastro-left {
+      display: none;
+    }
+
+    .cadastro-right {
+      width: 100%;
+      padding: 1.2rem;
+
+      .form-card {
+        max-width: 100%;
+        padding: 1.5rem;
+        box-shadow: none;
+        border-radius: 0;
+      }
+    }
+
+    .form-card h2 {
+      font-size: 1.6rem !important;
+    }
+
+    input {
+      font-size: 1rem !important;
+      padding: 0.8rem !important;
+    }
+
+    button {
+      padding: 0.9rem !important;
+      font-size: 1rem !important;
+    }
+  }
+
 }
 
-/* Remove o "olhinho" padrão dos navegadores (Chrome, Edge, etc) */
-input[type="password"]::-ms-reveal,
-input[type="password"]::-ms-clear {
-  display: none;
+.password-container input[type="password"],
+.password-container input[type="text"] {
+  height: 48px !important;
+  line-height: 48px !important;
+  padding: 0 1rem !important;
+  box-sizing: border-box !important;
+  appearance: none;
+  -webkit-appearance: none !important;
 }
 
-input[type="password"]::-webkit-credentials-auto-fill-button,
-input[type="password"]::-webkit-textfield-decoration-container,
-input[type="password"]::-webkit-password-toggle {
-  display: none !important;
+form input {
+  height: 48px;
+  line-height: 48px;
+  box-sizing: border-box;
 }
 
-input[type="password"] {
-  -webkit-text-security: disc !important; /* mantém estilo de senha */
+.password-hidden {
+  -webkit-text-security: disc !important;
+}
+
+.password-visible {
+  -webkit-text-security: none !important;
+}
+
+.pass-hidden {
+  -webkit-text-security: disc !important;
+}
+
+.pass-visible {
+  -webkit-text-security: none !important;
+}
+
+.password-container input {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  height: 48px !important;
+  line-height: 48px !important;
+  padding-right: 2.7rem !important;
+  box-sizing: border-box !important;
 }
